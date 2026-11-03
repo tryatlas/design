@@ -1,0 +1,1 @@
+{"version":3,"file":"upload-icon.d.ts","sourceRoot":"","sources":["../../../src/components/ui/upload-icon.tsx"],"names":[],"mappings":"AASA;;;;;;GAMG;AAEH,MAAM,MAAM,gBAAgB,GAAG;IAC7B,cAAc,EAAE,MAAM,IAAI,CAAC;IAC3B,aAAa,EAAE,MAAM,IAAI,CAAC;CAC3B,CAAC;AAUF,QAAA,MAAM,UAAU;WAGL,MAAM;kBACC,MAAM;IACpB,8EAA8E;iBACjE,OAAO;oDA2DtB,CAAC;AAEH,OAAO,EAAE,UAAU,EAAE,CAAC"}

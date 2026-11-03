@@ -1,0 +1,52 @@
+/**
+ * The motion vocabulary, as constants `motion` can take directly.
+ *
+ * These numbers are what make the chrome feel like one object rather than a
+ * set of components that each picked their own curve. They are the Standards
+ * design system's values verbatim, so a surface ported from the web moves the
+ * way its original does.
+ *
+ *   SPRING_RAIL       a rail changing width, a dock opening
+ *   SPRING_INDICATOR  a segmented pill or underline sliding between options
+ *   SPRING_PILL       an active row sliding between destinations
+ *   EASE_PANEL        a panel entering; the CSS `--ease-out-strong` as an array
+ *
+ * Springs, layout and presence belong to `motion`. Hover and state colour
+ * transitions, Base UI `data-open` keyframes and ScrollFade stay in CSS —
+ * the same split Standards uses.
+ */
+export declare const SPRING_RAIL: {
+    readonly type: "spring";
+    readonly stiffness: 420;
+    readonly damping: 40;
+};
+export declare const SPRING_DOCK: {
+    readonly type: "spring";
+    readonly stiffness: 380;
+    readonly damping: 40;
+};
+export declare const SPRING_INDICATOR: {
+    readonly type: "spring";
+    readonly stiffness: 520;
+    readonly damping: 38;
+};
+export declare const SPRING_PILL: {
+    readonly type: "spring";
+    readonly stiffness: 560;
+    readonly damping: 42;
+};
+/** The panel ease, matching `--ease-out-strong` in `globals.css`. */
+export declare const EASE_PANEL: readonly [0.22, 1, 0.36, 1];
+/** Panels stagger down a page at these delays. Index by position. */
+export declare const PANEL_STAGGER: readonly [0, 0.05, 0.1, 0.15, 0.2, 0.25];
+export declare const PANEL_ENTER: {
+    readonly initial: {
+        readonly opacity: 0;
+        readonly y: 8;
+    };
+    readonly animate: {
+        readonly opacity: 1;
+        readonly y: 0;
+    };
+};
+//# sourceMappingURL=motion.d.ts.map
