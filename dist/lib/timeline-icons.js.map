@@ -1,0 +1,1 @@
+{"version":3,"file":"timeline-icons.js","sourceRoot":"","sources":["../../src/lib/timeline-icons.ts"],"names":[],"mappings":"AAAA,OAAO,EACL,SAAS,EACT,aAAa,EACb,iBAAiB,EACjB,YAAY,EACZ,UAAU,GACX,MAAM,cAAc,CAAC;AAKtB,+EAA+E;AAC/E,MAAM,CAAC,MAAM,UAAU,GAA0C;IAC/D,MAAM,EAAE,iBAAiB;IACzB,QAAQ,EAAE,SAAS;IACnB,SAAS,EAAE,UAAU;IACrB,QAAQ,EAAE,YAAY;IACtB,UAAU,EAAE,aAAa;CAC1B,CAAC"}

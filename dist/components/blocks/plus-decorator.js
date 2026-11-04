@@ -1,0 +1,23 @@
+import { Fragment as _Fragment, jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import { cn } from "../../lib/utils.js";
+/**
+ * A corner cross-hair.
+ *
+ * Eight lines and no dependencies, and it is what makes a bordered panel
+ * read as a technical drawing rather than a card. Place one at each corner
+ * of a container; the `corner` prop nudges it onto the border by half a
+ * pixel so the crossing sits exactly on the line.
+ */
+function PlusDecorator({ corner = "tl", className, }) {
+    return (_jsx("div", { "aria-hidden": "true", "data-slot": "plus-decorator", className: cn("pointer-events-none absolute size-3 mask-radial-from-15%", "before:absolute before:inset-0 before:m-auto before:h-px before:bg-foreground/25", "after:absolute after:inset-0 after:m-auto after:w-px after:bg-foreground/25", corner === "tl" &&
+            "top-0 left-0 -translate-x-[calc(50%-0.5px)] -translate-y-[calc(50%-0.5px)]", corner === "tr" &&
+            "top-0 right-0 translate-x-[calc(50%-0.5px)] -translate-y-[calc(50%-0.5px)]", corner === "bl" &&
+            "bottom-0 left-0 -translate-x-[calc(50%-0.5px)] translate-y-[calc(50%-0.5px)]", corner === "br" &&
+            "right-0 bottom-0 translate-x-[calc(50%-0.5px)] translate-y-[calc(50%-0.5px)]", className) }));
+}
+/** All four corners at once. The parent must be `relative`. */
+function PlusCorners({ className }) {
+    return (_jsxs(_Fragment, { children: [_jsx(PlusDecorator, { corner: "tl", className: className }), _jsx(PlusDecorator, { corner: "tr", className: className }), _jsx(PlusDecorator, { corner: "bl", className: className }), _jsx(PlusDecorator, { corner: "br", className: className })] }));
+}
+export { PlusCorners, PlusDecorator };
+//# sourceMappingURL=plus-decorator.js.map
