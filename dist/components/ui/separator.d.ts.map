@@ -1,0 +1,1 @@
+{"version":3,"file":"separator.d.ts","sourceRoot":"","sources":["../../../src/components/ui/separator.tsx"],"names":[],"mappings":"AAEA,OAAO,EAAE,SAAS,IAAI,kBAAkB,EAAE,MAAM,0BAA0B,CAAC;AAG3E;;;;;;GAMG;AACH,iBAAS,SAAS,CAAC,EACjB,SAAS,EACT,WAA0B,EAC1B,MAAc,EACd,GAAG,KAAK,EACT,EAAE,kBAAkB,CAAC,KAAK,GAAG;IAAE,MAAM,CAAC,EAAE,OAAO,CAAA;CAAE,+BAcjD;AAED,OAAO,EAAE,SAAS,EAAE,CAAC"}
