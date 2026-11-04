@@ -1,0 +1,1 @@
+{"version":3,"file":"scroll-rail.d.ts","sourceRoot":"","sources":["../../../src/components/blocks/scroll-rail.tsx"],"names":[],"mappings":"AAoBA,iBAAS,UAAU,CAAC,EAClB,SAAS,EACT,SAAS,GACV,EAAE;IACD,SAAS,EAAE,KAAK,CAAC,SAAS,CAAC,WAAW,GAAG,IAAI,CAAC,CAAC;IAC/C,SAAS,CAAC,EAAE,MAAM,CAAC;CACpB,+BA8BA;AAED,OAAO,EAAE,UAAU,EAAE,CAAC"}
