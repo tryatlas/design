@@ -1,0 +1,69 @@
+import * as React from "react";
+import { Dialog as DialogPrimitive } from "@base-ui/react/dialog";
+/**
+ * The house dialog (decision 16), built on `@base-ui/react/dialog`.
+ *
+ * Shaped like shadcn's base-style `dialog` — same exports (including the
+ * `DialogOverlay` name for what Base UI calls the Backdrop), same `data-slot`,
+ * `showCloseButton` on the content — so a later `shadcn add` drops in with the
+ * classes swapped rather than the structure rewritten.
+ *
+ * A centred modal has **no Positioner**: the Popup places itself. Only anchored
+ * popups (popover, menu, tooltip) need one.
+ *
+ * Scales: `rounded-xl` (the dialog step), `shadow-lg` (`--elevation-dialog`),
+ * `z-overlay` for the scrim and `z-modal` for the dialog. `z-popover` sits
+ * above both on purpose, so a menu opened inside a dialog escapes it.
+ */
+declare function Dialog(props: DialogPrimitive.Root.Props): React.JSX.Element;
+declare function DialogTrigger(props: DialogPrimitive.Trigger.Props): React.JSX.Element;
+declare function DialogPortal(props: DialogPrimitive.Portal.Props): React.JSX.Element;
+declare function DialogClose(props: DialogPrimitive.Close.Props): React.JSX.Element;
+/** Radix called this the Overlay; Base UI calls it the Backdrop. */
+/**
+ * `blur` frosts what is behind the scrim as well as dimming it — for the
+ * blocking prompts (permission, elicitation, sign-in) where the app behind
+ * should read as unavailable rather than merely dimmed.
+ */
+declare function DialogOverlay({ className, blur, ...props }: DialogPrimitive.Backdrop.Props & {
+    blur?: boolean;
+}): React.JSX.Element;
+/**
+ * `variant="media"` is the full-bleed viewer (an image, a video, a gallery):
+ * a large fixed box centred with `inset-0 m-auto` instead of a translate, so
+ * nothing but an open animation ever writes the element's transform or
+ * translate — a caller can grow it out of the thumbnail that opened it. No
+ * padding or gap (the media runs to the edges; put a header row inside), and
+ * `bg-background` rather than the card, so the media sits on the page colour.
+ */
+type DialogContentVariant = "default" | "media";
+/**
+ * The default dialog's width. `default` is 32rem, for a prompt or a short
+ * form. `lg` is 44rem, desktop's larger dialogs (adding an agent, a skill, the
+ * theme and icon-theme pickers), for a list or a form with a preview. Both
+ * stop 1rem short of each window edge. `media` sizes itself; `size` does not
+ * apply to it.
+ */
+type DialogContentSize = "default" | "lg";
+declare function DialogContent({ className, children, showCloseButton, variant, size, blur, ...props }: DialogPrimitive.Popup.Props & {
+    showCloseButton?: boolean;
+    variant?: DialogContentVariant;
+    size?: DialogContentSize;
+    /** Frost the page behind the scrim as well as dimming it (`DialogOverlay blur`). */
+    blur?: boolean;
+}): React.JSX.Element;
+declare function DialogHeader({ className, ...props }: React.ComponentProps<"div">): React.JSX.Element;
+declare function DialogFooter({ className, ...props }: React.ComponentProps<"div">): React.JSX.Element;
+/**
+ * `quiet` is a title that names a thing rather than heading a task: a
+ * filename above an image in a `variant="media"` lightbox, set as desktop's
+ * lightbox header sets it (body size, secondary ink, one truncated line that
+ * fills the header row beside its controls).
+ */
+declare function DialogTitle({ className, variant, ...props }: DialogPrimitive.Title.Props & {
+    variant?: "default" | "quiet";
+}): React.JSX.Element;
+declare function DialogDescription({ className, ...props }: DialogPrimitive.Description.Props): React.JSX.Element;
+export { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogOverlay, DialogPortal, DialogTitle, DialogTrigger, };
+export type { DialogContentSize, DialogContentVariant };
+//# sourceMappingURL=dialog.d.ts.map
