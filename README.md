@@ -421,6 +421,14 @@ foundations page).
 - The package sets no root font size; desktop and web both use 13px, so `rem`
   spacing matches between them.
 
+### Upgrading to 0.1.17
+
+Focus and keycap fixes.
+
+- **Text fields draw no focus outline.** Text-type `input`, `textarea`, `[contenteditable]` and `[role=textbox]` are left out of the global `:focus-visible` rule. `Input`, `Textarea`, `InputGroup`, `ComboboxChips` and the `DataTable` search show focus by turning their border `--ring`. An invalid field keeps its red border.
+- **One muted keyboard ring.** Everything else gets 2px of `--ring` with a 2px offset (was 1px). The Atlas themes' `ring` is no longer pure white or black: Atlas dark `#808080`, light `#757575`. It reaches 3:1 or better on every surface.
+- **Keycaps inside filled buttons.** In a `default` or `destructive` `Button`, `Kbd` and `KbdKeys` take their colours from the button.
+
 ### Upgrading to 0.1.16
 
 Accessibility fixes. Secondary and disabled text get brighter in the Atlas-authored themes.
