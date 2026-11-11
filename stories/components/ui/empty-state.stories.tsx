@@ -79,3 +79,9 @@ export const CustomIcon: Story = {
     await expect(within(canvasElement).getByText("No Anthropic models yet")).toBeVisible();
   },
 };
+
+/** `size="page"`: a whole page with nothing on it yet. More room, and the title a step up. */
+export const Page: Story = {
+  args: { size: "page" },
+  parameters: { layout: "fullscreen" },
+};

@@ -1,5 +1,14 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { fn, screen, userEvent, within } from "storybook/test";
+import { MonitorIcon } from "lucide-react";
+import { expect, fn, screen, userEvent, waitFor, within } from "storybook/test";
+import {
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+} from "../../../src/ui/dropdown-menu.tsx";
+import { Icon } from "../../../src/ui/icon.tsx";
 import {
   InfoMenu,
   type InfoLinks,
@@ -18,15 +27,47 @@ const ALL_LINKS: InfoLinks = {
 };
 
 interface DemoProps {
-  user: { name: string; email: string; image?: string };
+  user: { name: string; email: string; image?: string | null };
   links: InfoLinks;
   privacy?: boolean;
   shortcuts?: boolean;
   onLogOut: () => void;
+  onFeedback?: () => void;
+  /** Show the host's own submenus (theme, interface size). */
+  extras?: boolean;
+}
+
+/** A host submenu: the shape a theme or interface-size picker takes. */
+function HostSub({ label, options }: { label: string; options: string[] }) {
+  return (
+    <DropdownMenuSub>
+      <DropdownMenuSubTrigger>
+        <Icon icon={MonitorIcon} size="sm" />
+        {label}
+      </DropdownMenuSubTrigger>
+      <DropdownMenuSubContent>
+        <DropdownMenuRadioGroup defaultValue={options[0]}>
+          {options.map((o) => (
+            <DropdownMenuRadioItem key={o} value={o}>
+              {o}
+            </DropdownMenuRadioItem>
+          ))}
+        </DropdownMenuRadioGroup>
+      </DropdownMenuSubContent>
+    </DropdownMenuSub>
+  );
 }
 
 /** The rail footer: you on the left, the help menu on the right. Menus open upward. */
-function Demo({ user, links, privacy = true, shortcuts = true, onLogOut }: DemoProps) {
+function Demo({
+  user,
+  links,
+  privacy = true,
+  shortcuts = true,
+  onLogOut,
+  onFeedback,
+  extras = false,
+}: DemoProps) {
   return (
     <StoryLinks>
       <div className="flex min-h-96 items-end">
@@ -36,12 +77,17 @@ function Demo({ user, links, privacy = true, shortcuts = true, onLogOut }: DemoP
             accountHref="/settings/profile"
             privacyHref={privacy ? "/settings/privacy" : undefined}
             onLogOut={onLogOut}
-          />
+          >
+            {extras && <HostSub label="Theme" options={["System", "Light", "Dark"]} />}
+          </ProfileMenu>
           <InfoMenu
             links={links}
             settingsHref="/settings"
             onShortcuts={shortcuts ? () => {} : undefined}
-          />
+            onFeedback={onFeedback}
+          >
+            {extras && <HostSub label="Interface size" options={["Default", "Large"]} />}
+          </InfoMenu>
         </div>
       </div>
     </StoryLinks>
@@ -99,5 +145,35 @@ export const LongText: Story = {
     },
   },
   play: openProfile,
+  tags: ["!autodocs"],
+};
+/** The host's own submenus, passed as children: Theme in the profile menu. */
+export const HostSubmenus: Story = {
+  args: { extras: true },
+  play: async (context) => {
+    await openProfile(context);
+    await screen.findByRole("menuitem", { name: /Theme/ });
+  },
+  tags: ["!autodocs"],
+};
+/** Interface size in the help menu. */
+export const InfoHostSubmenus: Story = {
+  args: { extras: true },
+  play: async (context) => {
+    await openInfo(context);
+    await screen.findByRole("menuitem", { name: /Interface size/ });
+  },
+  tags: ["!autodocs"],
+};
+/** Send feedback opens the host's own form instead of following a link. */
+export const FeedbackDialog: Story = {
+  args: { onFeedback: fn() },
+  play: async (context) => {
+    await openInfo(context);
+    await userEvent.click(await screen.findByRole("menuitem", { name: /Send feedback/ }));
+    await expect(context.args.onFeedback).toHaveBeenCalled();
+    // Let the menu finish closing, so the axe run sees the page at rest.
+    await waitFor(() => expect(screen.queryByRole("menu")).toBeNull());
+  },
   tags: ["!autodocs"],
 };

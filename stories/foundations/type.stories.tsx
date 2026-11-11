@@ -21,6 +21,7 @@ const STYLES = [
   ["caption", "The dimmed second line under something", "10px · 500 · muted"],
   ["code", "Any monospace run: a path, a hash, a command", "12px · 500 · Geist Mono"],
   ["heading", "A panel or dialog title", "14px · 600 · -0.01em"],
+  ["page-title", "A page's own title, the one h1", "20px · 500 · no extra tracking"],
 ] as const;
 
 function TypePage() {
@@ -56,7 +57,10 @@ function TypePage() {
           <span className="text-lg font-semibold">font-semibold · 600 · The quick brown fox</span>
         </div>
       </Section>
-      <Section title="Named text styles" intro="Six utilities that cover the panel chrome.">
+      <Section
+        title="Named text styles"
+        intro="Seven utilities that cover the panel chrome and the page's title."
+      >
         <TokenTable
           columns={["Utility", "Recipe", "Use", "Sample"]}
           rows={STYLES.map(([name, use, recipe]) => ({

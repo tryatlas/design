@@ -2,10 +2,19 @@
 
 import { Button as BaseButton } from "@base-ui/react/button";
 import type { VariantProps } from "class-variance-authority";
+import { Spinner } from "../components/ui/spinner.tsx";
 import { cn } from "../lib/utils.ts";
 import { buttonVariants } from "./button-variants.ts";
 
-export interface ButtonProps extends BaseButton.Props, VariantProps<typeof buttonVariants> {}
+export interface ButtonProps extends BaseButton.Props, VariantProps<typeof buttonVariants> {
+  /**
+   * Work this button started is running. A spinner sits over the label,
+   * which stays in place (hidden) so the button keeps its width; the button
+   * is `aria-busy` and a press does nothing, but it is not dimmed: it is
+   * busy, not unavailable. The spinner is `Spinner`, already in INFINITE_ANIMATIONS.
+   */
+  loading?: boolean;
+}
 
 /**
  * The house button (decision 32), built on `@base-ui/react/button`.
@@ -38,16 +47,54 @@ export interface ButtonProps extends BaseButton.Props, VariantProps<typeof butto
  * `IconButton` for why icon-only controls with a hint explaining the disabled
  * state are the case that wants it.
  */
-function Button({ className, variant, size, type = "button", ...props }: ButtonProps) {
+function Button({
+  className,
+  variant,
+  size,
+  shape,
+  elevated,
+  loading = false,
+  type = "button",
+  onClick,
+  children,
+  ...props
+}: ButtonProps) {
   return (
     <BaseButton
       data-slot="button"
+      data-loading={loading || undefined}
+      aria-busy={loading || undefined}
       type={type}
       className={(state) =>
-        cn(buttonVariants({ variant, size }), resolveClassName(className, state))
+        cn(
+          buttonVariants({ variant, size, shape, elevated }),
+          loading && "relative",
+          resolveClassName(className, state),
+        )
       }
+      // A busy button swallows the press, a form's submit included.
+      onClick={loading ? (event) => event.preventDefault() : onClick}
       {...props}
-    />
+    >
+      {loading ? (
+        <>
+          {/* Hidden by ink, not removed: the label keeps the button's width
+              and its accessible name (`visibility: hidden` would drop the
+              name). `contents` keeps the button's own gap; opacity does not
+              apply to a `contents` box, so the text goes transparent through
+              inherited colour and each element child fades. */}
+          <span className="contents text-transparent *:opacity-0">{children}</span>
+          <Spinner
+            size="sm"
+            label=""
+            data-slot="button-spin"
+            className="absolute inset-0 m-auto text-current"
+          />
+        </>
+      ) : (
+        children
+      )}
+    </BaseButton>
   );
 }
 

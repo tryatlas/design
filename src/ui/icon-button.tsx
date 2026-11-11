@@ -19,6 +19,7 @@ const GLYPH_FOR_SIZE: Record<
   sm: "sm",
   md: "sm",
   lg: "md",
+  xl: "xl",
 };
 
 export interface IconButtonProps
@@ -62,11 +63,15 @@ export interface IconButtonProps
  *
  *     xs 20px → icon xs (10)   sm 24px → icon sm (12)
  *     md 26px → icon sm (12)   lg 32px → icon md (14)
+ *     xl 48px → icon xl (20), the call dock's controls
  *
  * `2xs` (16px, icon xs) sits below the ladder: a corner affordance on a tile,
  * not a control in a row. It is too small to be the only way to an action
  * that matters, so keep it for something the tile also exposes elsewhere or
  * that is cheap to redo (removing a staged image).
+ *
+ * `reveal` hides a row affordance until its row (the nearest `group`) is
+ * hovered or focused; see `icon-button-variants.ts`.
  *
  * `focusableWhenDisabled` defaults to `false`, same as `Button` — see there.
  * Atlas's own hint system (`Hint` / `HintGroup`, `src/ui/tooltip.tsx`) already
@@ -82,6 +87,7 @@ function IconButton({
   size,
   shape,
   active,
+  reveal,
   icon,
   label,
   iconSize,
@@ -102,7 +108,10 @@ function IconButton({
       type={type}
       aria-label={label}
       className={(state) =>
-        cn(iconButtonVariants({ variant, size, shape, active }), resolveClassName(className, state))
+        cn(
+          iconButtonVariants({ variant, size, shape, active, reveal }),
+          resolveClassName(className, state),
+        )
       }
       {...props}
     >

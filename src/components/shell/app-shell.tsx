@@ -63,6 +63,12 @@ const renderSlot = (slot: ShellSlot, collapsed: boolean) =>
  * given, so an app remembers them wherever it remembers things. ⌘. toggles
  * the rail. The drawer's open state is the one thing kept here, and nothing
  * should outlive the window it was opened in.
+ *
+ * The drawer closes on a link inside it (the new screen would otherwise open
+ * underneath), on Escape, and on its scrim. The scrim is always mounted and
+ * fades in step with the rail's slide, both ways, so it never pops in on the
+ * first frame or vanishes while the rail is still leaving. `topBarActions`
+ * sit at the end of the top bar below `lg`.
  */
 function AppShell({
   title,
@@ -74,6 +80,7 @@ function AppShell({
   onCollapsedChange,
   dockMode,
   onDockModeChange,
+  topBarActions,
   children,
 }: {
   /** Shown beside the menu button when the rail is a drawer (below lg). */
@@ -88,6 +95,8 @@ function AppShell({
   /** The dock size the person chose (see `AppFrame`). */
   dockMode: SideDockMode;
   onDockModeChange: (mode: SideDockMode) => void;
+  /** Controls at the end of the top bar below `lg` (a search, a bell). */
+  topBarActions?: React.ReactNode;
   children: React.ReactNode;
 }) {
   const { open, setOpen } = useCommandMenu();
@@ -98,11 +107,13 @@ function AppShell({
       if (e.key === "." && (e.metaKey || e.ctrlKey)) {
         e.preventDefault();
         onCollapsedChange(!railCollapsed);
+      } else if (e.key === "Escape" && drawerOpen && !e.defaultPrevented) {
+        setDrawerOpen(false);
       }
     }
     document.addEventListener("keydown", onKeyDown);
     return () => document.removeEventListener("keydown", onKeyDown);
-  }, [railCollapsed, onCollapsedChange]);
+  }, [railCollapsed, onCollapsedChange, drawerOpen]);
 
   // The drawer is always the full rail.
   const collapsed = railCollapsed && !drawerOpen;
@@ -113,14 +124,18 @@ function AppShell({
       onDockModeChange={onDockModeChange}
       overlay={
         <>
-          {drawerOpen && (
-            <button
-              type="button"
-              aria-label="Close navigation"
-              onClick={() => setDrawerOpen(false)}
-              className="fixed inset-0 z-drawer scrim-soft lg:hidden"
-            />
-          )}
+          {/* Not a tab stop: Escape and the rail's own links close it. */}
+          <button
+            type="button"
+            aria-label="Close navigation"
+            aria-hidden={drawerOpen ? undefined : true}
+            tabIndex={-1}
+            onClick={() => setDrawerOpen(false)}
+            className={cn(
+              "fixed inset-0 z-drawer scrim-soft transition-opacity duration-slow ease-drawer lg:hidden",
+              !drawerOpen && "pointer-events-none opacity-0",
+            )}
+          />
           <CommandMenu open={open} onOpenChange={setOpen} actions={actions} />
         </>
       }
@@ -133,7 +148,8 @@ function AppShell({
             size="sm"
             onClick={() => setDrawerOpen(true)}
           />
-          <span className="truncate text-xs font-medium">{title}</span>
+          <span className="min-w-0 flex-1 truncate text-xs font-medium">{title}</span>
+          {topBarActions && <div className="flex shrink-0 items-center gap-1">{topBarActions}</div>}
         </div>
       }
       sidebar={
@@ -162,11 +178,18 @@ function AppShell({
             <SidebarSearch onOpen={() => setOpen(true)} />
 
             {/*
-              Delegation, not an interactive container: every target inside is a
-              real link. Tapping one on mobile has to dismiss the drawer, or the
-              new screen opens underneath it.
+              Delegation, not an interactive container. Tapping a link on
+              mobile has to dismiss the drawer, or the new screen opens
+              underneath it; a click on anything else in the rail (a group's
+              disclosure, a row's menu) leaves it open.
             */}
-            <SidebarBody onClickCapture={() => setDrawerOpen(false)}>{nav}</SidebarBody>
+            <SidebarBody
+              onClickCapture={(e) => {
+                if ((e.target as Element).closest("a[href]")) setDrawerOpen(false);
+              }}
+            >
+              {nav}
+            </SidebarBody>
 
             {/* You on the left; the rail's tools, grouped, on the right.
                 Collapsed, the same pieces stack in the 52px rail. */}

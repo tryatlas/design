@@ -15,7 +15,25 @@
  * Springs, layout and presence belong to `motion`. Hover and state colour
  * transitions, Base UI `data-open` keyframes and ScrollFade stay in CSS —
  * the same split Standards uses.
+ *
+ * Reduced motion: the CSS side swaps travel for a fade on its own
+ * (`utilities.css`). Motion's JS animations do not see that rule, so an app
+ * wraps its tree once in `<MotionConfig reducedMotion="user">` from
+ * `motion/react`: under `prefers-reduced-motion` Motion then drops transform
+ * and layout animation and keeps opacity. A loop started with `animate()` on a
+ * motion value ignores `MotionConfig`; gate it on `useReducedMotion()`.
  */
+
+/*
+ * The CSS tokens, for `motion` (`tokens.css` and the `@theme` block in
+ * `utilities.css`). Four durations, in seconds, and three curves; JS never
+ * types a fifth number or a fourth curve. `EASE_PANEL` below is a separate,
+ * documented value.
+ */
+export const EASE_OUT_STRONG = [0.23, 1, 0.32, 1] as const;
+export const EASE_IN_OUT_STRONG = [0.77, 0, 0.175, 1] as const;
+export const EASE_DRAWER = [0.32, 0.72, 0, 1] as const;
+export const DURATION = { instant: 0.08, fast: 0.12, base: 0.18, slow: 0.26 } as const;
 
 /*
  * Every spring is critically damped: it arrives and stops, with no overshoot,

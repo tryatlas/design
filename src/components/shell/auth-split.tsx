@@ -27,6 +27,10 @@ import { PlusCorners } from "../blocks/plus-decorator.tsx";
  * The pane is `bg-sidebar` rather than `bg-background` so the two halves read
  * as the rail/canvas pair the rest of the app is built from, rather than as
  * two unrelated surfaces that happen to sit side by side.
+ *
+ * The page is at least the screen's height and grows past it: a tall form,
+ * or a phone with its keyboard up, scrolls to the submit button instead of
+ * clipping it. The aside stays pinned at one screen while the form scrolls.
  */
 
 function AuthSplit({
@@ -44,10 +48,10 @@ function AuthSplit({
   proof?: React.ReactNode;
 }) {
   return (
-    <div className="flex h-svh overflow-hidden bg-background">
+    <div className="flex min-h-svh bg-background">
       {/* The page's `main` landmark: the form column is the primary content,
           the aside beside it is complementary. */}
-      <main className="relative flex min-w-0 flex-1 flex-col px-6 py-8">
+      <main className="relative flex min-w-0 flex-1 flex-col overflow-y-auto px-6 py-8">
         <DashedRails fade />
         <div className="flex h-8 shrink-0 items-center">{back}</div>
 
@@ -65,7 +69,7 @@ function AuthSplit({
         <div aria-hidden="true" className="h-8 shrink-0" />
       </main>
 
-      <aside className="relative hidden w-1/2 shrink-0 overflow-hidden border-l border-border-subtle bg-panel lg:block">
+      <aside className="sticky top-0 hidden h-svh w-1/2 shrink-0 overflow-hidden border-l border-border-subtle bg-panel lg:block">
         {/* Oversized and offset past the corner, so only the northern
             hemisphere shows and it reads as a horizon, not an object. */}
         <Globe className="absolute -top-[28%] -right-[30%] w-[120%]" />
@@ -85,12 +89,7 @@ function AuthSplit({
 
 /** One line of atmosphere copy, sized to sit under the field. */
 function AuthAsideCopy({ className, ...props }: React.ComponentProps<"p">) {
-  return (
-    <p
-      className={cn("max-w-md text-xl font-semibold tracking-tight text-balance", className)}
-      {...props}
-    />
-  );
+  return <p className={cn("max-w-md text-xl font-semibold text-balance", className)} {...props} />;
 }
 
 function AuthAsideNote({ className, ...props }: React.ComponentProps<"p">) {

@@ -1,21 +1,24 @@
 "use client";
 
-import { motion } from "motion/react";
 import { ArrowUpRightIcon, SlidersHorizontalIcon } from "lucide-react";
 
-import { EASE_PANEL } from "../../lib/motion.ts";
 import { cn } from "../../lib/utils.ts";
 import { IconButton } from "../../ui/icon-button.tsx";
 
 /**
  * The card of this system.
  *
- * `rounded-lg border border-element-selected bg-card` — desktop's card: a
- * hairline on a lighter step of the ramp, never a shadow. A panel may carry
- * a top-right action cluster (filter, expand) of round ghost icon buttons;
- * nothing in it is filled, since the panel's content is the thing to read.
- * Panels enter with a small rise, and a page staggers them down with `delay`
- * so the eye is led rather than presented.
+ * `surface-card` — desktop's card: a hairline on a lighter step of the
+ * ramp, never a shadow. A panel may carry a top-right action cluster
+ * (filter, expand) of round ghost icon buttons; nothing in it is filled,
+ * since the panel's content is the thing to read.
+ *
+ * Panels settle in with `animate-card-rise` (180ms, 4px up and a fade, a
+ * fade alone under reduced motion), and a page staggers them down with
+ * `index`, 30ms apart, so the eye is led rather than presented. CSS, not
+ * `motion`: it plays while the page is busiest (the data just landed), and
+ * a CSS animation stays off the main thread. The stagger stops at the sixth
+ * panel; past that a wait is latency, not a lead.
  */
 function Panel({
   title,
@@ -26,7 +29,7 @@ function Panel({
   className,
   bodyClassName,
   children,
-  delay = 0,
+  index = 0,
 }: {
   title?: React.ReactNode;
   subtitle?: React.ReactNode;
@@ -36,18 +39,17 @@ function Panel({
   className?: string;
   bodyClassName?: string;
   children: React.ReactNode;
-  delay?: number;
+  /** The panel's place down the page, for the stagger. Capped at 5. */
+  index?: number;
 }) {
   return (
-    <motion.section
+    <section
       data-slot="panel"
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.28, delay, ease: EASE_PANEL }}
       className={cn(
-        "flex min-w-0 flex-col overflow-hidden rounded-lg border border-element-selected bg-card",
+        "flex min-w-0 animate-card-rise flex-col overflow-hidden surface-card",
         className,
       )}
+      style={{ "--i": Math.min(Math.max(index, 0), 5) } as React.CSSProperties}
     >
       {(title || actions || onExpand || onFilter) && (
         <header className="flex items-start justify-between gap-3 px-3.5 pt-3 pb-2">
@@ -79,7 +81,7 @@ function Panel({
         </header>
       )}
       <div className={cn("min-h-0 flex-1 px-3.5 pt-1 pb-3.5", bodyClassName)}>{children}</div>
-    </motion.section>
+    </section>
   );
 }
 

@@ -41,9 +41,7 @@ import {
   type RefObject,
 } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
-import { motion } from "motion/react";
 import { cn } from "../../lib/utils.ts";
-import { EASE_PANEL } from "../../lib/motion.ts";
 
 export interface CalendarDay {
   id: string;
@@ -321,25 +319,24 @@ export function TimelineCalendar<T>({
           "before:absolute before:-inset-x-4 before:inset-y-0 before:-z-10 before:bg-background",
         )}
       >
-        {/* Keyed, with no `AnimatePresence`: the key change unmounts the old
-            date and mounts the new one, which plays `initial → animate`.
-            Presence would keep the OUTGOING date alive for its exit, and a
-            fast scroll changes the day faster than an exit completes — so
-            they stacked, and "Today" sat in the header next to the day you
-            had actually scrolled to and never left. */}
-        <motion.div
+        {/* Keyed, with no exit: the key change unmounts the old date and
+            mounts the new one, which fades in. Presence would keep the
+            OUTGOING date alive for its exit, and a fast scroll changes the
+            day faster than an exit completes — so they stacked, and "Today"
+            sat in the header next to the day you had actually scrolled to
+            and never left. A fade only: the date changes tens of times a
+            visit, and a sideways slide claims a direction that is wrong
+            when scrolling up. */}
+        <div
           key={current.id}
-          initial={{ x: -6, opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          transition={{ duration: 0.22, ease: EASE_PANEL }}
-          className="flex flex-1 items-end justify-between gap-3"
+          className="flex flex-1 animate-fade-in items-end justify-between gap-3"
         >
           <span aria-hidden="true" className="text-lg tracking-tight">
             <span className="font-medium text-foreground">{current.date}</span>
             <span className="text-muted-foreground"> / {current.day}</span>
           </span>
           {current.meta}
-        </motion.div>
+        </div>
       </div>
 
       {/* `isolate`: rows raise their own hover background, and this keeps

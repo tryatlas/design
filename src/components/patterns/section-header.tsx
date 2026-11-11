@@ -53,8 +53,15 @@ function SectionHeader({
 }
 
 /**
- * The title block at the top of a page: name, one line of what it is, and at
- * most one primary action.
+ * The title block at the top of a page: name, what it is, and at most one
+ * primary action.
+ *
+ * One page title everywhere, desktop's settings title: `text-xl` at 500,
+ * whose step carries its own leading and -0.02em tracking (no
+ * `tracking-tight` on top). The description is a `caption` that wraps: a
+ * lede cut off at one line hides the page's point. No bottom padding; the
+ * page's own `gap` spaces it from what follows. A title outside this header
+ * is the `page-title` utility.
  */
 function PageHeader({
   className,
@@ -70,14 +77,12 @@ function PageHeader({
   return (
     <div
       data-slot="page-header"
-      className={cn("flex flex-wrap items-end justify-between gap-3 pb-4", className)}
+      className={cn("flex flex-wrap items-end justify-between gap-3", className)}
       {...props}
     >
       <div className="min-w-0">
-        <h1 className="truncate text-xl font-medium tracking-tight text-foreground">{title}</h1>
-        {description && (
-          <p className="mt-0.5 truncate text-xs text-muted-foreground">{description}</p>
-        )}
+        <h1 className="truncate text-xl font-medium text-foreground">{title}</h1>
+        {description && <p className="mt-1 caption">{description}</p>}
       </div>
       {action && <div className="shrink-0">{action}</div>}
     </div>

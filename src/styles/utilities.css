@@ -224,6 +224,48 @@
   --animate-slide-in-right: slide-in-right 0.18s var(--ease-drawer);
   /* The closed sidebar's peek (`SidebarPeek`). */
   --animate-slide-in-left: slide-in-left 0.18s var(--ease-drawer);
+  /* A card settling into a page (`Panel`; desktop's `atlas-usage-in`): 4px up
+     and a fade. `both`, so a staggered card holds hidden until its turn; the
+     stagger is built in: set `--i` to the card's index and each waits 30ms
+     more than the one before it. */
+  --animate-card-rise: card-rise 0.18s var(--ease-drawer) calc(var(--i, 0) * 30ms) both;
+  /* A ring leaving a live marker, endless (listed in INFINITE_ANIMATIONS).
+     Scale and opacity only. Gone under reduced motion. */
+  --animate-pulse-ring: pulse-ring 2s var(--ease-out-strong) infinite;
+  /* The row a jump landed on (desktop's `atlas-jump-flash`): a primary tint
+     that fades out once. It animates `background-color`, not opacity: the
+     tint sits behind the row's own text, so fading the row would fade the
+     words with it. One element, once, and Chrome and Firefox composite it. */
+  --animate-jump-flash: jump-flash 1.2s var(--ease-out-strong) forwards;
+
+  @keyframes card-rise {
+    from {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  @keyframes pulse-ring {
+    from {
+      transform: scale(0.3);
+      opacity: 0.8;
+    }
+    to {
+      transform: scale(1.5);
+      opacity: 0;
+    }
+  }
+  @keyframes jump-flash {
+    from {
+      background-color: color-mix(in oklab, var(--primary) 14%, transparent);
+    }
+    to {
+      background-color: transparent;
+    }
+  }
 
   /* Animated icon glyphs (`src/ui/animated-icon.tsx`, decision 33). Only the
      one-shot, click-driven ones need a keyframe: everything hover-driven is a
@@ -368,6 +410,72 @@
       opacity: 0;
       transform: scale(0.95);
     }
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   Reduced motion: gentler, not zero.
+
+   Under `prefers-reduced-motion` an entrance keeps its fade and loses its
+   travel. Only the animation's NAME is swapped, so the duration, easing,
+   delay and fill mode stay what the utility says. Attribute selectors, so a
+   variant (`data-open:animate-scale-in`) matches as well as the bare class.
+
+   The exit swap is scoped to the closing state. A Base UI popup carries its
+   entrance and its exit classes at once (`animate-scale-in` and
+   `data-ending-style:animate-scale-out`), so an unscoped exit rule would
+   also match while it opens, and win, and fade the popup OUT as it appeared
+   (desktop shipped that bug once). Base UI marks the states with bare
+   `data-open` / `data-closed`; the last selector is for a plain exit class on
+   an element with neither.
+
+   The icon pulses (`SendGlyph`, `BellGlyph`) stop dead rather than fade, by a
+   ~0 duration, not `animation: none`: a caller lowers the flag from
+   `onAnimationEnd`, and `none` never fires it, so the flag would latch and
+   the glyph never pulse again. The check draw stays, because the draw is the
+   state change itself.
+
+   Motion's JS animations are not reached by any of this. An app wraps its
+   tree in `<MotionConfig reducedMotion="user">` (from `motion/react`), which
+   drops transform and layout animation and keeps opacity: the same rule.
+   ────────────────────────────────────────────────────────────────────────── */
+@keyframes rm-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes rm-fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  [class*="animate-scale-in"],
+  [class*="animate-card-in"],
+  [class*="animate-card-rise"],
+  [class*="animate-pill-in"],
+  [class*="animate-slide-in-right"],
+  [class*="animate-slide-in-left"] {
+    animation-name: rm-fade !important;
+  }
+  [data-closed][class*="animate-scale-out"],
+  [data-ending-style][class*="animate-scale-out"],
+  [class*="animate-scale-out"]:not([data-open]):not([data-closed]) {
+    animation-name: rm-fade-out !important;
+  }
+  [class*="animate-icon-send"],
+  [class*="animate-icon-bell-ring"] {
+    animation-duration: 0.01ms !important;
+  }
+  [class*="animate-pulse-ring"] {
+    animation: none !important;
+    opacity: 0;
   }
 }
 
@@ -646,6 +754,153 @@
 }
 @utility scrim-soft {
   background-color: rgb(0 0 0 / 0.2);
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   Materials: one recipe for one thing.
+
+     surface-card  an in-content card: `Panel`, `StatGrid`, `DataTable`,
+                   `SettingCard` and `KpiStrip` are this. A hairline on a
+                   lighter step of the ramp, never a shadow. A chip inside
+                   one is `border border-border-subtle`.
+     glass         a bar over scrolling content (a top bar, a palette's
+                   backdrop): the page colour at 72% under the one blur.
+     glass-bar     a floating pill or bar: the card at 80% under the one
+                   blur, a hairline, a raised top edge and the menu shadow.
+
+   Both glasses go opaque under `prefers-reduced-transparency`. A popover
+   that wants glass is `PopoverContent surface="glass"`, not these.
+   ────────────────────────────────────────────────────────────────────────── */
+@utility surface-card {
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--element-selected);
+  background-color: var(--card);
+}
+
+@utility glass {
+  background: color-mix(in oklab, var(--background) 72%, transparent);
+  backdrop-filter: blur(var(--blur-glass)) saturate(180%);
+  -webkit-backdrop-filter: blur(var(--blur-glass)) saturate(180%);
+  @media (prefers-reduced-transparency: reduce) {
+    background: var(--background);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
+@utility glass-bar {
+  border: 1px solid var(--border);
+  background: color-mix(in oklab, var(--card) 80%, transparent);
+  backdrop-filter: blur(var(--blur-glass)) saturate(180%);
+  -webkit-backdrop-filter: blur(var(--blur-glass)) saturate(180%);
+  box-shadow: var(--inset-highlight), var(--elevation-menu);
+  @media (prefers-reduced-transparency: reduce) {
+    background: var(--card);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
+/* The title at the top of a page, where `PageHeader` cannot go: the `text-xl`
+   step with its own tracking and leading, at 500. Desktop's settings title. */
+@utility page-title {
+  font-family: var(--font-sans);
+  font-size: var(--text-xl);
+  line-height: var(--text-xl--line-height);
+  letter-spacing: var(--text-xl--letter-spacing);
+  font-weight: 500;
+  color: var(--foreground);
+}
+
+/* The press dip for a custom pressable that cannot be `Button` or
+   `IconButton` (a chip, a pill, a glyph button): the same recipe theirs is.
+   It sinks to 0.97 the moment it is pressed (80ms down), eases back at
+   `duration-fast`, and the colour transitions ride along so a hover colour
+   on the same element still eases. `scale`, not `transform`, as the
+   primitives do, so it composes with a translate. A full-width row never
+   scales: it takes `active:bg-element-active` instead. Reduced motion keeps
+   the colour and drops the dip. */
+@utility pressable {
+  transition-property: color, background-color, border-color, opacity, scale;
+  transition-duration: var(--duration-fast);
+  transition-timing-function: var(--ease-out-strong);
+  &:active:not(:disabled, [data-disabled], [aria-disabled="true"]) {
+    scale: 0.97;
+    transition-duration: var(--duration-instant);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    &:active:not(:disabled, [data-disabled], [aria-disabled="true"]) {
+      scale: none;
+    }
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   Live and loading text. Both endless, both in INFINITE_ANIMATIONS.
+
+     thinking-shimmer  a live status label ("Thinking…"): a highlight that
+                       sweeps across the glyphs. Clipped to the text, so it
+                       repaints the label and nothing else, and stepped (30
+                       steps a sweep) so it does not hold the display at
+                       120Hz. Not a spinner: the rows beside it carry their
+                       own running glyphs.
+     stream-caret      the bar after text that is still streaming: 2px by
+                       1em of `--primary`, blinking twice a second.
+
+   Under reduced motion the caret holds still and the label is plain
+   secondary text. A placeholder is `Skeleton`, not either of these.
+   ────────────────────────────────────────────────────────────────────────── */
+@keyframes thinking-sweep {
+  0% {
+    background-position: 140% 0;
+  }
+  100% {
+    background-position: -40% 0;
+  }
+}
+@utility thinking-shimmer {
+  background-image: linear-gradient(
+    90deg,
+    var(--muted-foreground) 0%,
+    var(--muted-foreground) 30%,
+    var(--foreground) 50%,
+    var(--muted-foreground) 70%,
+    var(--muted-foreground) 100%
+  );
+  background-size: 250% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: thinking-sweep 2.2s steps(30) infinite;
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+    background-image: none;
+    -webkit-text-fill-color: var(--secondary-foreground);
+  }
+}
+
+@keyframes stream-caret-blink {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+@utility stream-caret {
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  margin-left: 2px;
+  vertical-align: text-bottom;
+  background: var(--primary);
+  border-radius: 1px;
+  animation: stream-caret-blink 1s steps(1, end) infinite;
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
 }
 
 /* ──────────────────────────────────────────────────────────────────────────

@@ -40,6 +40,10 @@ import { IconButton } from "../../ui/icon-button.tsx";
  * `InfoMenu` is the Atlas desktop app's (?) menu: help, the community, and
  * the way out to settings and the website. External destinations open in a
  * new tab, and a link the caller leaves out is left out of the menu.
+ *
+ * Both take `children`: the host's own entries (a theme submenu, an
+ * interface-size submenu), as `DropdownMenuItem`s or `DropdownMenuSub`s,
+ * placed with the menu's other settings.
  */
 
 function ProfileMenu({
@@ -47,11 +51,14 @@ function ProfileMenu({
   accountHref,
   privacyHref,
   onLogOut,
+  children,
 }: {
-  user: { name: string; email: string; image?: string };
+  user: { name: string; email: string; image?: string | null };
   accountHref: string;
   privacyHref?: string;
   onLogOut: () => void;
+  /** The host's own entries, after Account and Privacy (a theme submenu). */
+  children?: React.ReactNode;
 }) {
   const { Link } = useLinks();
   // The name starts with the initials the avatar shows, so a voice user can
@@ -97,6 +104,7 @@ function ProfileMenu({
             Privacy
           </DropdownMenuItem>
         )}
+        {children}
         <DropdownMenuSeparator />
         <DropdownMenuItem variant="destructive" onClick={onLogOut}>
           <Icon icon={LogOutIcon} size="sm" />
@@ -127,10 +135,16 @@ function InfoMenu({
   links,
   settingsHref,
   onShortcuts,
+  onFeedback,
+  children,
 }: {
   links: InfoLinks;
   settingsHref?: string;
   onShortcuts?: () => void;
+  /** Send feedback opens the host's own form (a dialog) instead of a link. Wins over `links.feedback`. */
+  onFeedback?: () => void;
+  /** The host's own entries, after the help group (an interface-size submenu). */
+  children?: React.ReactNode;
 }) {
   const { Link } = useLinks();
   return (
@@ -145,11 +159,18 @@ function InfoMenu({
             Docs
           </DropdownMenuItem>
         )}
-        {links.feedback && (
-          <DropdownMenuItem render={external(links.feedback)}>
+        {onFeedback ? (
+          <DropdownMenuItem onClick={onFeedback}>
             <Icon icon={MessageCircleIcon} size="sm" />
-            Send feedback
+            Send feedback…
           </DropdownMenuItem>
+        ) : (
+          links.feedback && (
+            <DropdownMenuItem render={external(links.feedback)}>
+              <Icon icon={MessageCircleIcon} size="sm" />
+              Send feedback
+            </DropdownMenuItem>
+          )
         )}
         {onShortcuts && (
           <DropdownMenuItem onClick={onShortcuts}>
@@ -158,6 +179,7 @@ function InfoMenu({
             <DropdownMenuShortcut>⌘ /</DropdownMenuShortcut>
           </DropdownMenuItem>
         )}
+        {children}
         <DropdownMenuSeparator />
         {links.github && (
           <DropdownMenuItem render={external(links.github)}>

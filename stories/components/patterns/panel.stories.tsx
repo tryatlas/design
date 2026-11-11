@@ -23,7 +23,7 @@ const meta = {
     docs: {
       description: {
         component:
-          "The card of this system: `rounded-lg`, an `element-selected` hairline on `bg-card`, never a shadow. An optional top-right cluster of round ghost icon buttons (filter, expand). Enters with a small rise; pass `delay` to stagger a page.",
+          "The card of this system: `rounded-lg`, an `element-selected` hairline on `bg-card`, never a shadow. An optional top-right cluster of round ghost icon buttons (filter, expand). Settles in with `animate-card-rise` (180ms, 4px up and a fade; a fade alone under reduced motion); pass `index` to stagger a page, 30ms a panel.",
       },
     },
   },
@@ -55,18 +55,15 @@ export const LongText: Story = {
       "Includes cached input, which is billed at a tenth of the rate, and excludes sessions still running",
   },
 };
-/** Panels stagger down a page with `delay`. */
-export const Stagger: Story = {
+/**
+ * `animate-card-rise`: panels settle in 4px and fade, staggered 30ms apart by
+ * `index` (capped at 5). Remount the story to replay it.
+ */
+export const CardRise: Story = {
   render: (args) => (
     <div className="grid w-200 grid-cols-3 gap-3">
-      {[0, 0.05, 0.1].map((delay, i) => (
-        <Panel
-          key={delay}
-          {...args}
-          className=""
-          delay={delay}
-          title={["Tokens", "Sessions", "Spend"][i]}
-        >
+      {[0, 1, 2].map((i) => (
+        <Panel key={i} {...args} className="" index={i} title={["Tokens", "Sessions", "Spend"][i]}>
           <DotMatrix values={SERIES.slice(i * 2)} />
         </Panel>
       ))}

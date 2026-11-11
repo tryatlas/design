@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { CreditCardIcon, KeyIcon, UsersIcon } from "lucide-react";
 import { useState } from "react";
+import { expect } from "storybook/test";
 import {
   DrillInRow,
   SettingCard,
@@ -67,12 +68,18 @@ interface DemoProps {
   groups: SettingsNavGroup[];
   pathname?: string;
   long?: boolean;
+  wide?: boolean;
 }
 
-function Demo({ groups, pathname = "/settings", long = false }: DemoProps) {
+function Demo({ groups, pathname = "/settings", long = false, wide = false }: DemoProps) {
   return (
     <StoryLinks pathname={pathname}>
-      <SettingsShell org={long ? LONG_ORG : ORGS[0]!} groups={groups} backHref="/sessions">
+      <SettingsShell
+        org={long ? LONG_ORG : ORGS[0]!}
+        groups={groups}
+        backHref="/sessions"
+        wide={wide}
+      >
         <GeneralPage long={long} />
       </SettingsShell>
     </StoryLinks>
@@ -90,7 +97,7 @@ const MANY_GROUPS: SettingsNavGroup[] = [
 const meta = {
   title: "Shell/SettingsShell",
   component: Demo,
-  args: { groups: SETTINGS_GROUPS, pathname: "/settings", long: false },
+  args: { groups: SETTINGS_GROUPS, pathname: "/settings", long: false, wide: false },
   argTypes: { groups: { control: false } },
   parameters: {
     layout: "fullscreen",
@@ -123,4 +130,27 @@ export const Rail: Story = {
       </div>
     </StoryLinks>
   ),
+};
+
+/** `wide`: a page that lays plans or columns side by side gets 72rem, not 40rem. */
+export const Wide: Story = { args: { wide: true } };
+
+/**
+ * On a page under a section (Billing → Plans), the section stays lit: the
+ * row is the longest one the path sits under, so General (`/settings`) does
+ * not light for every page.
+ */
+export const SubPage: Story = {
+  args: { pathname: "/settings/billing/plans" },
+  play: async ({ canvasElement }) => {
+    // Both rails, the phone row and the column, whichever is showing.
+    const lit = canvasElement.querySelectorAll('nav[aria-label="Settings"] [aria-current="page"]');
+    await expect([...lit].map((a) => a.textContent)).toEqual(["Billing", "Billing"]);
+  },
+};
+
+/** Below `md` the sections run across the top in a line that scrolls sideways. */
+export const Phone: Story = {
+  args: { pathname: "/settings/members" },
+  globals: { viewport: { value: "phone" } },
 };

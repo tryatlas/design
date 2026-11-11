@@ -8,7 +8,10 @@ import {
   PlusIcon,
   SettingsIcon,
   UserPlusIcon,
+  UsersIcon,
 } from "lucide-react";
+import { useState } from "react";
+
 import { cn } from "../../lib/utils.ts";
 
 import { useLinks } from "../../lib/link.tsx";
@@ -27,6 +30,7 @@ import {
   DropdownMenuTrigger,
 } from "../../ui/dropdown-menu.tsx";
 import { Icon } from "../../ui/icon.tsx";
+import { Skeleton } from "../ui/skeleton.tsx";
 
 /**
  * The workspace switcher, top-left of the rail.
@@ -50,20 +54,35 @@ import { Icon } from "../../ui/icon.tsx";
  *    login is this list for" is the question immediately before "which
  *    workspace", so it is answered first.
  *  - Each workspace carries a numeric shortcut. The check marks the active
- *    one — the number is how you get there without the menu at all.
+ *    one; with `numberKeys`, pressing a number while the list is open
+ *    switches to that workspace.
+ *
+ * What the host owns: `plan` (a label after the member count), `loading`
+ * (the count is not known yet), `onCreateOrg` and `onInvite` (the host's
+ * dialogs; without `onInvite` the item is a link to `membersHref`), and
+ * `shortcuts={false}` for a host that has no keyboard shortcuts to show.
  */
 
-function OrgMark({ initials, className }: { initials: string; className?: string }) {
+function OrgMark({
+  initials,
+  logo,
+  className,
+}: {
+  initials: string;
+  /** An image URL drawn in place of the initials. */
+  logo?: string | null;
+  className?: string;
+}) {
   return (
     <span
       aria-hidden="true"
       className={cn(
-        "flex size-5 shrink-0 items-center justify-center rounded-sm",
+        "flex size-5 shrink-0 items-center justify-center overflow-hidden rounded-sm",
         "bg-(--element-emphasis) text-3xs font-semibold text-foreground",
         className,
       )}
     >
-      {initials}
+      {logo ? <img src={logo} alt="" className="size-full object-cover" /> : initials}
     </span>
   );
 }
@@ -78,6 +97,12 @@ function OrgSwitcher({
   onLogOut,
   className,
   collapsed = false,
+  plan,
+  loading = false,
+  onCreateOrg,
+  onInvite,
+  numberKeys = false,
+  shortcuts = true,
 }: {
   /** The active workspace. */
   org: Organisation;
@@ -90,11 +115,25 @@ function OrgSwitcher({
   onLogOut?: () => void;
   className?: string;
   collapsed?: boolean;
+  /** The plan's name, after the member count ("Team"). */
+  plan?: string;
+  /** The member count is still loading: a placeholder holds its line. */
+  loading?: boolean;
+  /** Create or join a workspace (the host's dialog). Absent: the item is not shown. */
+  onCreateOrg?: () => void;
+  /** Invite people (the host's dialog). Absent: the item links to `membersHref`. */
+  onInvite?: () => void;
+  /** With the workspace list open, 1–9 switch to that workspace. */
+  numberKeys?: boolean;
+  /** Show the keyboard-shortcut hints. Off for a host with no shortcuts. */
+  shortcuts?: boolean;
 }) {
   const { Link } = useLinks();
+  const [open, setOpen] = useState(false);
+  const hint = (keys: string) => shortcuts && <DropdownMenuShortcut>{keys}</DropdownMenuShortcut>;
 
   return (
-    <DropdownMenu>
+    <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger
         // Collapsed, the mark is all that shows, so the name starts with its
         // initials (WCAG 2.5.3, label in name).
@@ -108,14 +147,19 @@ function OrgSwitcher({
           className,
         )}
       >
-        <OrgMark initials={org.initials} className="size-6 rounded-md text-3xs" />
+        <OrgMark initials={org.initials} logo={org.logo} className="size-6 rounded-md text-3xs" />
         {!collapsed && (
           <>
             <span className="flex min-w-0 flex-1 flex-col">
               <span className="truncate text-xs font-medium text-foreground">{org.name}</span>
-              <span className="truncate text-3xs text-muted-foreground">
-                {org.memberCount} members
-              </span>
+              {loading ? (
+                <Skeleton className="my-0.5 h-2 w-14" />
+              ) : (
+                <span className="truncate text-3xs text-muted-foreground">
+                  {org.memberCount} {org.memberCount === 1 ? "member" : "members"}
+                  {plan && ` · ${plan}`}
+                </span>
+              )}
             </span>
             <Icon icon={ChevronsUpDownIcon} size="xs" className="text-muted-foreground" />
           </>
@@ -126,12 +170,25 @@ function OrgSwitcher({
         <DropdownMenuItem render={<Link href={settingsHref} />}>
           <Icon icon={SettingsIcon} size="sm" />
           Settings
-          <DropdownMenuShortcut>G then S</DropdownMenuShortcut>
+          {hint("G then S")}
         </DropdownMenuItem>
-        <DropdownMenuItem render={<Link href={membersHref} />}>
-          <Icon icon={UserPlusIcon} size="sm" />
-          Invite and manage members
-        </DropdownMenuItem>
+        {onInvite ? (
+          <>
+            <DropdownMenuItem onClick={onInvite}>
+              <Icon icon={UserPlusIcon} size="sm" />
+              Invite people…
+            </DropdownMenuItem>
+            <DropdownMenuItem render={<Link href={membersHref} />}>
+              <Icon icon={UsersIcon} size="sm" />
+              Manage members
+            </DropdownMenuItem>
+          </>
+        ) : (
+          <DropdownMenuItem render={<Link href={membersHref} />}>
+            <Icon icon={UserPlusIcon} size="sm" />
+            Invite and manage members
+          </DropdownMenuItem>
+        )}
 
         <DropdownMenuSeparator />
 
@@ -139,30 +196,49 @@ function OrgSwitcher({
           <DropdownMenuSubTrigger>
             <Icon icon={ArrowLeftRightIcon} size="sm" />
             Switch workspace
-            <DropdownMenuShortcut>O then W</DropdownMenuShortcut>
+            {hint("O then W")}
           </DropdownMenuSubTrigger>
-          <DropdownMenuSubContent className="w-64">
+          <DropdownMenuSubContent
+            className="w-64"
+            onKeyDown={
+              numberKeys
+                ? (e) => {
+                    const n = Number(e.key);
+                    const target = Number.isInteger(n) && n > 0 ? orgs[n - 1] : undefined;
+                    if (!target || e.metaKey || e.ctrlKey || e.altKey) return;
+                    e.preventDefault();
+                    onOrgChange(target.id);
+                    // A choice closes the menu, as a click on the row does.
+                    setOpen(false);
+                  }
+                : undefined
+            }
+          >
             {/* Which login this list belongs to, before which workspace. */}
             <DropdownMenuGroup>
               <DropdownMenuLabel className="tracking-normal normal-case">{email}</DropdownMenuLabel>
               {orgs.map((o, i) => (
                 <DropdownMenuItem key={o.id} onClick={() => onOrgChange(o.id)}>
-                  <OrgMark initials={o.initials} />
+                  <OrgMark initials={o.initials} logo={o.logo} />
                   <span className="flex-1 truncate">{o.name}</span>
                   {o.id === org.id && (
                     <Icon icon={CheckIcon} size="sm" className="text-foreground" />
                   )}
-                  <span className="tnum w-3 text-right text-2xs text-disabled">{i + 1}</span>
+                  {shortcuts && i < 9 && (
+                    <span className="tnum w-3 text-right text-2xs text-disabled">{i + 1}</span>
+                  )}
                 </DropdownMenuItem>
               ))}
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuLabel>Account</DropdownMenuLabel>
-              <DropdownMenuItem>
-                <Icon icon={PlusIcon} size="sm" />
-                Create or join a workspace…
-              </DropdownMenuItem>
+              {onCreateOrg && (
+                <DropdownMenuItem onClick={onCreateOrg}>
+                  <Icon icon={PlusIcon} size="sm" />
+                  Create or join a workspace…
+                </DropdownMenuItem>
+              )}
               <DropdownMenuItem>Add an account…</DropdownMenuItem>
             </DropdownMenuGroup>
           </DropdownMenuSubContent>
@@ -173,7 +249,7 @@ function OrgSwitcher({
         <DropdownMenuItem variant="destructive" onClick={onLogOut}>
           <Icon icon={LogOutIcon} size="sm" />
           Log out
-          <DropdownMenuShortcut>⌥ ⇧ Q</DropdownMenuShortcut>
+          {hint("⌥ ⇧ Q")}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

@@ -29,3 +29,19 @@ describe("Progress tone", () => {
     expect(el.className).not.toContain("bg-primary");
   });
 });
+
+describe("Progress motion", () => {
+  it("moves the fill by transform, not width", () => {
+    const { container } = render(<Progress value={40} aria-label="Indexing" />);
+    const el = indicator(container);
+    expect(el.style.transform).toBe("translateX(-60%)");
+    expect(el.style.width).toBe("");
+    expect(el.className).toContain("transition-transform");
+    expect(el.className).toContain("motion-reduce:transition-none");
+  });
+
+  it("a full bar sits at translateX(0)", () => {
+    const { container } = render(<Progress value={100} aria-label="Indexing" />);
+    expect(indicator(container).style.transform).toBe("translateX(0%)");
+  });
+});

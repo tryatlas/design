@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { animate, motion, useMotionValue } from "motion/react";
+import { animate, motion, useMotionValue, useReducedMotion } from "motion/react";
 import type { AnimationPlaybackControls } from "motion/react";
 import { infiniteAnimationFps } from "../../lib/infinite-animations.ts";
 import { cn } from "../../lib/utils.ts";
@@ -22,6 +22,10 @@ import { useMeasure } from "../../lib/use-measure.ts";
  * With `--infinite-animation-fps` set (see `INFINITE_ANIMATIONS`), the track
  * moves in that many even steps a second instead of every frame: the easing
  * is still linear, only quantised in time, so the speed is unchanged.
+ *
+ * Under `prefers-reduced-motion` it does not move: the first copy sits at
+ * the start and the loop never begins. `animate()` on a motion value is not
+ * reached by `MotionConfig`, so the check is here.
  */
 
 /** Linear, held flat between `count` evenly spaced steps. */
@@ -62,8 +66,13 @@ function InfiniteSlider({
   const translation = useMotionValue(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [key, setKey] = useState(0);
+  const reduce = useReducedMotion();
 
   useEffect(() => {
+    if (reduce) {
+      translation.set(0);
+      return;
+    }
     let controls: AnimationPlaybackControls | undefined;
     const size = direction === "horizontal" ? width : height;
     if (!size) return;
@@ -95,20 +104,32 @@ function InfiniteSlider({
       });
     }
     return () => controls.stop();
-  }, [key, translation, currentSpeed, width, height, gap, isTransitioning, direction, reverse]);
+  }, [
+    key,
+    translation,
+    currentSpeed,
+    width,
+    height,
+    gap,
+    isTransitioning,
+    direction,
+    reverse,
+    reduce,
+  ]);
 
-  const hoverProps = speedOnHover
-    ? {
-        onHoverStart: () => {
-          setIsTransitioning(true);
-          setCurrentSpeed(speedOnHover);
-        },
-        onHoverEnd: () => {
-          setIsTransitioning(true);
-          setCurrentSpeed(speed);
-        },
-      }
-    : {};
+  const hoverProps =
+    speedOnHover && !reduce
+      ? {
+          onHoverStart: () => {
+            setIsTransitioning(true);
+            setCurrentSpeed(speedOnHover);
+          },
+          onHoverEnd: () => {
+            setIsTransitioning(true);
+            setCurrentSpeed(speed);
+          },
+        }
+      : {};
 
   return (
     <div className={cn("overflow-hidden", className)}>

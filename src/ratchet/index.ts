@@ -5,6 +5,7 @@ import { ATLAS_PREFIX_RULE, RULES, type RatchetRule } from "./rules.ts";
 export {
   ATLAS_PREFIX_RULE,
   RULES,
+  SURFACE_CARD_RULE,
   TRANSITION_ALL_RULE,
   strictRules,
   type RatchetRule,

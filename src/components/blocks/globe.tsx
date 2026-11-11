@@ -31,10 +31,17 @@ import { whenIdle } from "../../lib/when-idle.ts";
  * WebGL takes numbers, not custom properties, so the dot, marker and glow
  * colours are resolved from the token layer on mount. `useTheme()` is a
  * dependency so switching appearance rebuilds the globe in the new ink.
- * Under `prefers-reduced-motion` it stops turning on its own but can still
- * be dragged. Its turn redraws at most `--infinite-animation-fps` times a
- * second when that is set (see `INFINITE_ANIMATIONS`), covering the same
- * angle per second either way.
+ * Its turn redraws at most `--infinite-animation-fps` times a second when
+ * that is set (see `INFINITE_ANIMATIONS`), covering the same angle per
+ * second either way.
+ *
+ * A drag hands its speed on: released mid-flick, the globe keeps turning at
+ * the pointer's last speed (from its last three moves, capped) and slows by
+ * 5% a frame until it is back to the auto-spin, which then carries on.
+ *
+ * Under `prefers-reduced-motion` it does not turn on its own and does not
+ * coast. It draws once, and redraws only while it is being dragged: a still
+ * image costs one frame, not sixty a second.
  *
  * cobe is not in the import graph: it is fetched with a dynamic `import()`
  * once the globe comes within 200px of the viewport and the main thread is
@@ -99,6 +106,13 @@ const DEFAULT_MARKERS: Array<GlobeMarker> = [
   },
 ];
 
+/** A released drag's speed is capped at this many radians per 60 Hz frame. */
+const MAX_SPIN = 0.08;
+/** What a coasting spin keeps of its speed each 60 Hz frame. */
+const SPIN_DECAY = 0.95;
+/** Pixels of horizontal drag per radian of turn (the drag's own ratio). */
+const PX_PER_RADIAN = 300;
+
 /** How far a live count may wander from its base, as a fraction. */
 const DRIFT = 0.06;
 const TICK_MS = 1200;
@@ -157,6 +171,12 @@ function Globe({
   const drag = useRef<{ x: number; y: number } | null>(null);
   const dragDelta = useRef({ phi: 0, theta: 0 });
   const offset = useRef({ phi: 0, theta: 0 });
+  /** The drag's last three moves, for the speed it hands on. */
+  const samples = useRef<Array<{ x: number; t: number }>>([]);
+  /** The coasting speed after a release, radians per 60 Hz frame. */
+  const spin = useRef(0);
+  /** Starts the draw loop if it has stopped (the still globe, on a drag). */
+  const wake = useRef<() => void>(() => {});
   const [ready, setReady] = useState(false);
   const [unsupported, setUnsupported] = useState(false);
   const [counts, setCounts] = useState(() => markers.map((m) => m.status?.count ?? 0));
@@ -187,17 +207,30 @@ function Globe({
     function move(e: PointerEvent) {
       if (!drag.current) return;
       dragDelta.current = {
-        phi: (e.clientX - drag.current.x) / 300,
+        phi: (e.clientX - drag.current.x) / PX_PER_RADIAN,
         theta: (e.clientY - drag.current.y) / 1000,
       };
+      samples.current = [...samples.current.slice(-2), { x: e.clientX, t: e.timeStamp }];
     }
-    function up() {
+    function up(e: PointerEvent) {
       if (!drag.current) return;
       offset.current.phi += dragDelta.current.phi;
       offset.current.theta += dragDelta.current.theta;
       dragDelta.current = { phi: 0, theta: 0 };
       drag.current = null;
       canvasRef.current?.removeAttribute("data-dragging");
+      // The speed the pointer left at, in radians per 60 Hz frame.
+      const first = samples.current[0];
+      const last = samples.current.at(-1);
+      samples.current = [];
+      // A pointer that stopped before it let go hands on nothing.
+      if (first && last && last.t > first.t && e.timeStamp - last.t < 100) {
+        const pxPerMs = (last.x - first.x) / (last.t - first.t);
+        spin.current = Math.min(
+          MAX_SPIN,
+          Math.max(-MAX_SPIN, (pxPerMs / PX_PER_RADIAN) * (1000 / 60)),
+        );
+      }
     }
     window.addEventListener("pointermove", move, { passive: true });
     window.addEventListener("pointerup", up, { passive: true });
@@ -266,13 +299,31 @@ function Globe({
           return;
         }
         last = now;
-        // `speed` is per 60 Hz frame; scaled by the time that passed.
-        if (!drag.current && !still) phi += speed * (minFrameMs ? elapsed / (1000 / 60) : 1);
+        // `speed` and `spin` are per 60 Hz frame; scaled by the time that passed.
+        const frames = minFrameMs ? elapsed / (1000 / 60) : 1;
+        if (!drag.current && !still) {
+          if (Math.abs(spin.current) > speed) {
+            // Coasting from a release, until it is down to the auto-spin.
+            phi += spin.current * frames;
+            spin.current *= SPIN_DECAY ** frames;
+          } else {
+            spin.current = 0;
+            phi += speed * frames;
+          }
+        }
         globe?.update({
           phi: phi + offset.current.phi + dragDelta.current.phi,
           theta: THETA + offset.current.theta + dragDelta.current.theta,
         });
+        // Still: this frame was the last, unless a drag is under way.
+        if (still && !drag.current) {
+          frame = 0;
+          return;
+        }
         frame = requestAnimationFrame(tick);
+      };
+      wake.current = () => {
+        if (!frame && globe) frame = requestAnimationFrame(tick);
       };
       tick();
       canvas.dataset.ready = "";
@@ -315,6 +366,7 @@ function Globe({
 
     return () => {
       cancelled = true;
+      wake.current = () => {};
       io.disconnect();
       cancelIdle?.();
       ro?.disconnect();
@@ -349,7 +401,10 @@ function Globe({
         ref={canvasRef}
         onPointerDown={(e) => {
           drag.current = { x: e.clientX, y: e.clientY };
+          samples.current = [{ x: e.clientX, t: e.timeStamp }];
+          spin.current = 0;
           e.currentTarget.dataset.dragging = "";
+          wake.current();
         }}
         className={cn(
           "relative size-full cursor-grab touch-none rounded-full opacity-0",

@@ -18,12 +18,24 @@ interface DemoProps {
   align?: "start" | "center" | "end";
   arrow?: boolean;
   surface?: "default" | "tinted" | "glass";
+  flush?: boolean;
+  instant?: boolean;
   /** Busy content behind the trigger, so a translucent surface shows. */
   backdrop?: boolean;
   body?: string;
 }
 
-function Demo({ defaultOpen, side, align, arrow, surface, body, backdrop }: DemoProps) {
+function Demo({
+  defaultOpen,
+  side,
+  align,
+  arrow,
+  surface,
+  flush,
+  instant,
+  body,
+  backdrop,
+}: DemoProps) {
   return (
     <div className="relative flex min-h-64 items-start justify-center pt-4">
       {backdrop && (
@@ -37,7 +49,14 @@ function Demo({ defaultOpen, side, align, arrow, surface, body, backdrop }: Demo
       )}
       <Popover defaultOpen={defaultOpen}>
         <PopoverTrigger render={<Button variant="outline" />}>Notifications</PopoverTrigger>
-        <PopoverContent side={side} align={align} arrow={arrow} surface={surface}>
+        <PopoverContent
+          side={side}
+          align={align}
+          arrow={arrow}
+          surface={surface}
+          flush={flush}
+          instant={instant}
+        >
           <PopoverHeader>
             <PopoverTitle>Notifications</PopoverTitle>
             <PopoverDescription>{body}</PopoverDescription>
@@ -119,4 +138,28 @@ export const Exit: Story = {
   args: { defaultOpen: true },
   tags: ["!autodocs"],
   play: () => expectPopupExit("popover-content"),
+};
+
+/** `flush`: no padding, so a list with its own rows runs to the popup's edge. */
+export const Flush: Story = {
+  args: { defaultOpen: true, flush: true },
+  tags: ["!autodocs"],
+  play: async () => {
+    const popup = document.querySelector<HTMLElement>("[data-slot=popover-content]")!;
+    await expect(getComputedStyle(popup).paddingTop).toBe("0px");
+  },
+};
+
+/**
+ * `instant`: no scale-in and no exit, for a popup opened by typing (an
+ * @-mention list, a slash picker) that would otherwise replay its entrance
+ * on every keystroke.
+ */
+export const Instant: Story = {
+  args: { defaultOpen: true, instant: true },
+  tags: ["!autodocs"],
+  play: async () => {
+    const popup = document.querySelector<HTMLElement>("[data-slot=popover-content]")!;
+    await expect(getComputedStyle(popup).animationName).toBe("none");
+  },
 };

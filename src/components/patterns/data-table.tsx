@@ -110,7 +110,7 @@ function DataTable<T>({
         // A container, so columns can hide by the TABLE's width rather than
         // the viewport's — the dock and the interface scale both change one
         // without the other.
-        "@container flex min-h-0 flex-col overflow-hidden rounded-lg border border-element-selected bg-card",
+        "@container flex min-h-0 flex-col overflow-hidden surface-card",
         // The scroller's keyboard focus rings the whole card (the global
         // ring's 2px, 2px out): drawn on the scroller, the sticky header and
         // the card's clip would hide most of it.

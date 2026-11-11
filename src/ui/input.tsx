@@ -20,12 +20,13 @@ import { inputVariants } from "./input-variants.ts";
 export interface InputProps
   extends Omit<React.ComponentProps<"input">, "size">, VariantProps<typeof inputVariants> {}
 
-function Input({ className, size, type = "text", ...props }: InputProps) {
+function Input({ className, size, variant, type = "text", ...props }: InputProps) {
   return (
     <input
       data-slot="input"
+      data-variant={variant === "code" ? variant : undefined}
       type={type}
-      className={cn(inputVariants({ size }), className)}
+      className={cn(inputVariants({ size, variant }), className)}
       {...props}
     />
   );

@@ -30,7 +30,7 @@ const buttonVariants = cva(
     // motion keeps the colour feedback without the movement. Tailwind's
     // `scale-*` writes the `scale` property, so that is what transitions.
     "transition-[color,background-color,border-color,scale] duration-fast ease-out-strong",
-    "motion-safe:not-data-disabled:active:scale-97 active:duration-instant",
+    "motion-safe:not-data-disabled:not-data-loading:active:scale-97 active:duration-instant",
     "data-disabled:cursor-not-allowed data-disabled:opacity-50",
     // A toggle (`aria-pressed`) that is on reads as selected, in any variant —
     // the same rule as `IconButton`.
@@ -42,6 +42,11 @@ const buttonVariants = cva(
       variant: {
         default: ["bg-primary text-primary-foreground hover:bg-primary-hover", FILLED_KBD],
         destructive: ["bg-destructive text-destructive-foreground hover:opacity-90", FILLED_KBD],
+        // A positive commit that is not the page's primary: join a call,
+        // accept. Filled in the success ink, its text the page colour.
+        success: ["bg-success text-background hover:opacity-90", FILLED_KBD],
+        // The same on a tint, for a row of them or a quieter place.
+        "success-subtle": "bg-success-muted text-success hover:bg-success-muted/80",
         outline: "border-border bg-transparent text-foreground hover:bg-element-hover",
         secondary: "bg-card text-foreground hover:bg-element-hover",
         ghost:
@@ -64,8 +69,20 @@ const buttonVariants = cva(
         md: "h-control-md px-2.5 text-xs",
         lg: "h-control-lg px-3 text-sm",
       },
+      // `pill` is a button floating over content or standing alone in a
+      // bar (a call control, a "new messages" jump): fully round ends.
+      shape: {
+        default: "",
+        pill: "rounded-full",
+      },
+      // A control floating over scrolling content needs a shadow to lift it
+      // off what passes beneath; one on a surface does not.
+      elevated: {
+        true: "shadow-md",
+        false: "",
+      },
     },
-    defaultVariants: { variant: "default", size: "md" },
+    defaultVariants: { variant: "default", size: "md", shape: "default", elevated: false },
   },
 );
 

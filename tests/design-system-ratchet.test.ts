@@ -3,6 +3,7 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import { afterAll, describe, expect, it } from "vitest";
 import {
+  SURFACE_CARD_RULE,
   TRANSITION_ALL_RULE,
   defineRatchetSuite,
   runRatchet,
@@ -43,6 +44,7 @@ defineRatchetSuite(
     roots: ["src/ui", "src/components", "src/lib", "src/theme", "stories", ".storybook"],
     exemptFiles: EXEMPT_FILES,
     banAtlasPrefix: true,
+    rules: [SURFACE_CARD_RULE],
     minFiles: 150,
   },
   { describe, it },
@@ -245,6 +247,27 @@ describe("strictRules", () => {
       "1 arbitrary-radius rounded-[inherit]",
       "2 arbitrary-radius rounded-[3px]",
     ]);
+  });
+});
+
+describe("SURFACE_CARD_RULE", () => {
+  const dir = mkdtempSync(path.join(tmpdir(), "ratchet-card-"));
+  afterAll(() => rmSync(dir, { recursive: true, force: true }));
+  writeFileSync(
+    path.join(dir, "a.tsx"),
+    [
+      'const ok = "surface-card"',
+      'const ring = "rounded-xl bg-card ring-1 ring-element-selected"',
+      'const glass = "rounded-xl bg-card/95 backdrop-blur-glass"',
+    ].join("\n"),
+  );
+
+  it("bans a ring edge and the dialog radius on a card fill, and lets glass through", () => {
+    expect(
+      runRatchet({ cwd: dir, roots: ["."], rules: [SURFACE_CARD_RULE] })
+        .filter((v) => v.rule === "surface-card")
+        .map((v) => `${v.line} ${v.match}`),
+    ).toEqual(["2 rounded-xl bg-card", "2 ring-element-selected"]);
   });
 });
 

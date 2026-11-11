@@ -9,12 +9,14 @@ import { cn } from "../../lib/utils.ts";
  * Sizes are the control ladder, so an avatar in a 28px row is exactly as tall
  * as the button beside it. Below it, `2xs` (16px) and `3xs` (14px) are for a
  * face inside a line of text or a dense graph (desktop's commit graph); they
- * are px, like the ladder, because the app's root font size moves `rem`. The fallback is initials on `bg-muted` — never a
+ * are px, like the ladder, because the app's root font size moves `rem`. Above
+ * it, `xl` (40px) and `2xl` (64px) are a person's own page and profile
+ * header, never a row. The fallback is initials on `bg-muted` — never a
  * generated hue, because a members table with eight colours in it reads as
  * eight categories rather than eight people.
  */
 
-type AvatarSize = "3xs" | "2xs" | "xs" | "sm" | "md" | "lg";
+type AvatarSize = "3xs" | "2xs" | "xs" | "sm" | "md" | "lg" | "xl" | "2xl";
 
 function Avatar({
   className,
@@ -34,6 +36,8 @@ function Avatar({
         "data-[size=sm]:size-control-sm",
         "data-[size=md]:size-control-md",
         "data-[size=lg]:size-control-lg",
+        "data-[size=xl]:size-10",
+        "data-[size=2xl]:size-16",
         className,
       )}
       {...props}
@@ -63,6 +67,8 @@ function AvatarFallback({ className, ...props }: AvatarPrimitive.Fallback.Props)
         "group-data-[size=sm]/avatar:text-3xs",
         "group-data-[size=md]/avatar:text-2xs",
         "group-data-[size=lg]/avatar:text-xs",
+        "group-data-[size=xl]/avatar:text-sm",
+        "group-data-[size=2xl]/avatar:text-xl",
         className,
       )}
       {...props}
@@ -90,14 +96,20 @@ function AvatarGroup({ className, ...props }: React.ComponentProps<"div">) {
   );
 }
 
-/** The "+3" cap at the end of a group. */
-function AvatarGroupCount({ className, ...props }: React.ComponentProps<"div">) {
+/** The "+3" cap at the end of a group. `size` matches the avatars beside it. */
+function AvatarGroupCount({
+  className,
+  size = "md",
+  ...props
+}: React.ComponentProps<"div"> & { size?: "md" | "lg" }) {
   return (
     <div
       data-slot="avatar-group-count"
+      data-size={size}
       className={cn(
-        "relative flex size-control-md shrink-0 items-center justify-center",
-        "rounded-full bg-muted text-2xs font-medium text-secondary-foreground",
+        "relative flex shrink-0 items-center justify-center",
+        size === "lg" ? "size-control-lg text-xs" : "size-control-md text-2xs",
+        "rounded-full bg-muted font-medium text-secondary-foreground",
         "ring-2 ring-background",
         className,
       )}
@@ -107,3 +119,4 @@ function AvatarGroupCount({ className, ...props }: React.ComponentProps<"div">) 
 }
 
 export { Avatar, AvatarFallback, AvatarGroup, AvatarGroupCount, AvatarImage };
+export type { AvatarSize };

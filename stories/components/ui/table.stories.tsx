@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import { contrastExempt } from "../../lib/a11y.ts";
 import {
   Table,
   TableBody,
@@ -29,9 +30,10 @@ interface DemoProps {
   caption?: string;
   footer?: boolean;
   selected?: number;
+  muted?: number;
 }
 
-function Demo({ rows = ROWS, caption, footer = false, selected }: DemoProps) {
+function Demo({ rows = ROWS, caption, footer = false, selected, muted }: DemoProps) {
   return (
     <div className="w-full max-w-xl">
       <Table>
@@ -53,7 +55,11 @@ function Demo({ rows = ROWS, caption, footer = false, selected }: DemoProps) {
             </TableRow>
           ) : (
             rows.map((r, i) => (
-              <TableRow key={`${r.name}-${i}`} data-selected={i === selected || undefined}>
+              <TableRow
+                key={`${r.name}-${i}`}
+                data-selected={i === selected || undefined}
+                data-muted={i === muted || undefined}
+              >
                 <TableCell className="max-w-48 truncate font-medium">{r.name}</TableCell>
                 <TableCell className="text-right tabular-nums">{r.sessions}</TableCell>
                 <TableCell className="text-right tabular-nums">{r.tokens}</TableCell>
@@ -120,3 +126,6 @@ export const ManyItems: Story = {
     })),
   },
 };
+
+/** `data-muted`: a row shown but not in play, its cells at 50% (the one disabled look). */
+export const Muted: Story = { args: { muted: 2 }, parameters: contrastExempt("disabled") };

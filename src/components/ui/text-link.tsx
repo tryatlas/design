@@ -11,13 +11,23 @@ import { linkVariants } from "./text-link-variants.ts";
  * `LinkProvider`'s `Link`, so an app's router handles `href`; without a
  * provider it is a plain `<a href>`.
  *
- * Not for a link inside running text: prose keeps its underline at rest, and
- * an `<a>` in markdown or a description is styled by the text around it.
+ * A link the app sets inside running text itself takes `variant="inline"`,
+ * which keeps the underline at rest; an `<a>` in markdown is styled by the
+ * prose around it.
  */
-function TextLink({ className, tone, ...props }: LinkProps & VariantProps<typeof linkVariants>) {
+function TextLink({
+  className,
+  tone,
+  variant,
+  ...props
+}: LinkProps & VariantProps<typeof linkVariants>) {
   const { Link } = useLinks();
   return (
-    <Link data-slot="text-link" className={cn(linkVariants({ tone }), className)} {...props} />
+    <Link
+      data-slot="text-link"
+      className={cn(linkVariants({ tone, variant }), className)}
+      {...props}
+    />
   );
 }
 

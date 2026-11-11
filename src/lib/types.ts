@@ -12,6 +12,8 @@ export type Organisation = {
   slug: string;
   /** Two-letter mark shown when there is no logo. */
   initials: string;
+  /** The organisation's logo, an image URL. Absent or `null`: the initials. */
+  logo?: string | null;
   memberCount: number;
   /** Your role in this org; decides what the sidebar offers. */
   role: Role;

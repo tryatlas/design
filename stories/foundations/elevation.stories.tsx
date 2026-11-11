@@ -63,6 +63,32 @@ function ElevationPage() {
           <div className="label inset-highlight rounded-lg border border-border bg-card px-3 py-2 shadow-md">
             inset-highlight shadow-md
           </div>
+          <div className="label rounded-lg glass-bar px-3 py-2 text-foreground">glass-bar</div>
+          <div className="label rounded-lg glass px-3 py-2 text-foreground">glass</div>
+        </div>
+        <p className="caption">
+          <code className="code">glass-bar</code> is the one floating material: a bar or a control
+          over the page (a call dock, a composer), blurred, bordered and lifted.{" "}
+          <code className="code">glass</code> is the fill alone, for a popover over a busy page.
+          Both turn opaque under prefers-reduced-transparency.
+        </p>
+      </Section>
+      <Section
+        title="Card"
+        intro={
+          <>
+            <code className="code">surface-card</code> is every card's edge and fill: the large
+            radius, a 1px element-selected border and the card fill. Panel, StatGrid, KpiStrip,
+            DataTable and SettingCard all draw it. An app can hold its own code to it with the
+            opt-in SURFACE_CARD_RULE from @tryatlas/design/ratchet.
+          </>
+        }
+      >
+        <div className="flex gap-4">
+          <div className="surface-card w-48 p-4">
+            <p className="heading">Seats</p>
+            <p className="caption">12 of 20 in use</p>
+          </div>
         </div>
       </Section>
       <Section
