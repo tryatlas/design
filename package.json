@@ -1,6 +1,6 @@
 {
   "name": "@tryatlas/design",
-  "version": "0.1.17",
+  "version": "0.1.18",
   "private": false,
   "description": "Atlas's design system: primitives, tokens, themes and the ratchet, shared by desktop, web and docs.",
   "license": "Apache-2.0",

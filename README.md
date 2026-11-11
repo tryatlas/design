@@ -424,6 +424,34 @@ foundations page).
 - The package sets no root font size; desktop and web both use 13px, so `rem`
   spacing matches between them.
 
+### Upgrading to 0.1.18
+
+Motion, surfaces and variants from the web design audit. **One breaking change:** `Panel`'s `delay` prop is now `index` (stagger position).
+
+- **Motion:**
+  - `Dialog`, `Popover` and `Sheet` take `instant`, so surfaces opened from the keyboard skip their entrance.
+  - Under reduced motion, popups fade instead of moving.
+  - The new `stream-caret` replaces `.session-caret`.
+  - The shimmer and pulse-ring are listed in `INFINITE_ANIMATIONS`.
+  - New `pressable` utility: a press dip for anything clickable that isn't a `Button`.
+- **Surfaces:** a `surface-card` utility, plus an opt-in ratchet rule, `SURFACE_CARD_RULE`.
+- **Variants:**
+  - `Button`: `loading`, a success tone, a pill shape.
+  - `IconButton`: `xl` and `reveal`. `reveal` hides by opacity, so the button stays in the tab order and the accessibility tree.
+  - `Skeleton`: `xl` radius.
+  - `Textarea`: `size`.
+  - `Sheet`: `surface`. `SheetHeader`: `divided` and `compact`.
+  - `EmptyState`: page size.
+  - `KpiStrip`: a column per cell, and a phone layout.
+  - `SettingRow`: disabled.
+  - `TextLink`: inline (always underlined).
+  - Read-only inputs get their own look.
+- **Shells:**
+  - `SettingsShell`: a phone layout, and parent items stay lit on sub-pages.
+  - `OrgSwitcher`: logos, plan label, loading state, `onCreateOrg`, `onInvite`, `numberKeys`, `shortcuts={false}`.
+  - `ProfileMenu` and `InfoMenu` take `children` for host submenus. `InfoMenu` also takes `onFeedback`.
+  - `PersonAvatar`: `art`, `image={null}`, `xl` and `2xl`.
+
 ### Upgrading to 0.1.17
 
 Focus and keycap fixes.
