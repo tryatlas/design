@@ -15,7 +15,7 @@ const meta = {
     docs: {
       description: {
         component:
-          "A single-line text field. Keeps the global focus ring and lifts its border to `border-strong` on focus.",
+          "A single-line text field. It draws no focus outline, however it was focused: its border lifts to the ring's colour instead.",
       },
     },
   },

@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { ArrowRight, Loader2, Plus, Trash2 } from "lucide-react";
+import { expect, userEvent, within } from "storybook/test";
 import { Button } from "../../src/ui/button.tsx";
 import { Icon } from "../../src/ui/icon.tsx";
 import { Kbd } from "../../src/ui/kbd.tsx";
@@ -120,6 +121,19 @@ export const WithIcon: Story = {
       </Button>
     </div>
   ),
+};
+
+/** Reached by Tab: the one keyboard ring, 2px of `--ring`, 2px out (decision 31). */
+export const KeyboardFocus: Story = {
+  play: async ({ canvasElement }) => {
+    await userEvent.tab();
+    const button = within(canvasElement).getByRole("button");
+    await expect(button).toHaveFocus();
+    const style = getComputedStyle(button);
+    await expect(style.outlineStyle).toBe("solid");
+    await expect(style.outlineWidth).toBe("2px");
+    await expect(style.outlineOffset).toBe("2px");
+  },
 };
 
 /** `aria-pressed` reads as selected in every variant. */

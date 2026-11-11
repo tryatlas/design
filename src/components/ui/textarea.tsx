@@ -10,7 +10,7 @@ function Textarea({ className, ...props }: React.ComponentProps<"textarea">) {
         "field-sizing-content min-h-16",
         "transition-colors duration-fast ease-out-strong",
         "placeholder:text-muted-foreground",
-        "focus:border-border-strong",
+        "focus:border-ring",
         "disabled:cursor-not-allowed disabled:opacity-50",
         "aria-invalid:border-destructive",
         className,

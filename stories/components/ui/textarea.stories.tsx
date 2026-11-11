@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import { expect, userEvent, within } from "storybook/test";
 import { Textarea } from "../../../src/components/ui/textarea.tsx";
 
 const meta = {
@@ -32,5 +33,23 @@ export const LongText: Story = {
   args: {
     defaultValue:
       "Refactor the settings panel so every row reads from one store selector. Keep the existing keyboard shortcuts, and don't touch the theme editor — it has its own store. Run the contract suites before you finish, and leave a checkpoint after each file you change so I can roll back one step at a time.",
+  },
+};
+
+/** Clicked into: no outline (decision 31), the border in the ring's colour. */
+export const Clicked: Story = {
+  play: async ({ canvasElement }) => {
+    const field = within(canvasElement).getByRole("textbox");
+    await userEvent.click(field);
+    await expect(field).toHaveFocus();
+    // Past the border's colour transition (`duration-fast`).
+    await new Promise((resolve) => setTimeout(resolve, 250));
+    const style = getComputedStyle(field);
+    await expect(style.outlineStyle).toBe("none");
+    const ring = canvasElement.ownerDocument.createElement("div");
+    ring.className = "border border-ring";
+    canvasElement.append(ring);
+    await expect(style.borderTopColor).toBe(getComputedStyle(ring).borderTopColor);
+    ring.remove();
   },
 };

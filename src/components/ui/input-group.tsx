@@ -15,7 +15,7 @@ function InputGroup({ className, ...props }: React.ComponentProps<"div">) {
       data-slot="input-group"
       role="group"
       className={cn(
-        "group/input-group relative flex h-control-md w-full min-w-0 items-center rounded border border-border bg-panel-input transition-colors duration-fast ease-out-strong outline-none in-data-[slot=combobox-content]:focus-within:border-inherit has-[[data-slot=input-group-control]:focus-visible]:outline-2 has-[[data-slot=input-group-control]:focus-visible]:outline-offset-1 has-[[data-slot=input-group-control]:focus-visible]:outline-ring has-[[data-slot=input-group-control]:focus-visible]:outline-solid has-[[data-slot][aria-invalid=true]]:border-destructive has-[>[data-align=block-end]]:h-auto has-[>[data-align=block-end]]:flex-col has-[>[data-align=block-start]]:h-auto has-[>[data-align=block-start]]:flex-col has-[>[data-align=block-end]]:[&>input]:pt-3 has-[>[data-align=block-start]]:[&>input]:pb-3 has-[>[data-align=inline-end]]:[&>input]:pr-1.5 has-[>[data-align=inline-start]]:[&>input]:pl-1.5",
+        "group/input-group relative flex h-control-md w-full min-w-0 items-center rounded border border-border bg-panel-input transition-colors duration-fast ease-out-strong outline-none in-data-[slot=combobox-content]:focus-within:border-inherit has-[[data-slot=input-group-control]:focus:not([aria-invalid=true])]:border-ring has-[[data-slot][aria-invalid=true]]:border-destructive has-[>[data-align=block-end]]:h-auto has-[>[data-align=block-end]]:flex-col has-[>[data-align=block-start]]:h-auto has-[>[data-align=block-start]]:flex-col has-[>[data-align=block-end]]:[&>input]:pt-3 has-[>[data-align=block-start]]:[&>input]:pb-3 has-[>[data-align=inline-end]]:[&>input]:pr-1.5 has-[>[data-align=inline-start]]:[&>input]:pl-1.5",
         className,
       )}
       {...props}
@@ -111,14 +111,11 @@ function InputGroupText({ className, ...props }: React.ComponentProps<"span">) {
   );
 }
 
-// The group is what shows focus, and it draws exactly one indicator: the
-// global ring (2px of `--ring`, offset 1px) around the whole field, with the
-// border at rest. A text field matches `:focus-visible` however it was
-// focused (a click, a key, `autoFocus` on a menu's search field), so the ring
-// is always the indicator; the border that used to lift to `--border-strong`
-// sat 1px inside it and read as a second ring. The control opts out of the
-// ring itself (`focus-ring-none`), which would otherwise draw one inside the
-// group's border.
+// The group is what shows focus: its border lifts to `--ring` while a control
+// inside it has focus, however it got there. A text field draws no outline
+// (decision 31), so that border is the one indicator. The controls carry
+// `focus-ring-none` as well, so a field can never draw an outline inside the
+// group's border even where the global rule does not reach.
 function InputGroupInput({ className, ...props }: React.ComponentProps<typeof Input>) {
   return (
     <Input
