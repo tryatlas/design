@@ -111,10 +111,10 @@ function DataTable<T>({
         // the viewport's — the dock and the interface scale both change one
         // without the other.
         "@container flex min-h-0 flex-col overflow-hidden rounded-lg border border-element-selected bg-card",
-        // The scroller's keyboard focus rings the whole card, as InputGroup
-        // does: drawn on the scroller, the sticky header and the card's clip
-        // would hide most of it.
-        "has-[[data-slot=data-table-scroller]:focus-visible]:outline-2 has-[[data-slot=data-table-scroller]:focus-visible]:outline-offset-1 has-[[data-slot=data-table-scroller]:focus-visible]:outline-ring has-[[data-slot=data-table-scroller]:focus-visible]:outline-solid",
+        // The scroller's keyboard focus rings the whole card (the global
+        // ring's 2px, 2px out): drawn on the scroller, the sticky header and
+        // the card's clip would hide most of it.
+        "has-[[data-slot=data-table-scroller]:focus-visible]:outline-2 has-[[data-slot=data-table-scroller]:focus-visible]:outline-offset-2 has-[[data-slot=data-table-scroller]:focus-visible]:outline-ring has-[[data-slot=data-table-scroller]:focus-visible]:outline-solid",
         className,
       )}
     >
@@ -257,7 +257,7 @@ function TableSearch({ className, ...props }: React.ComponentProps<"input">) {
       />
       <input
         type="search"
-        className="h-control-md w-50 rounded-md border border-border bg-background pr-2 pl-6 text-xs text-foreground outline-none focus-ring-none placeholder:text-muted-foreground focus:border-border-strong"
+        className="h-control-md w-50 rounded-md border border-border bg-background pr-2 pl-6 text-xs text-foreground outline-none focus-ring-none placeholder:text-muted-foreground focus:border-ring"
         {...props}
       />
     </div>

@@ -12,10 +12,10 @@ import { inputVariants } from "./input-variants.ts";
  * composition through `className` — sized on the Atlas control heights and
  * drawn with the theme's own `--input` / `--border` tokens.
  *
- * It keeps the global `:focus-visible` ring rather than drawing its own: one
- * focus indicator across the whole app is the point of decision 31. The border
- * still lifts to `--border-strong` on focus, which is the "this field is live"
- * signal a ring alone does not give a mouse user.
+ * A text field draws no outline (decision 31): browsers match
+ * `:focus-visible` on a field however it was focused, so a ring would draw on
+ * every click. Its border lifts to `--ring` on focus instead, the keyboard
+ * ring's colour, which clears 3:1 on the field's fill.
  */
 export interface InputProps
   extends Omit<React.ComponentProps<"input">, "size">, VariantProps<typeof inputVariants> {}

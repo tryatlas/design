@@ -1,6 +1,18 @@
 import { cva } from "class-variance-authority";
 
 /**
+ * Keycaps inside a colour-filled button (`default`, `destructive`) take their
+ * ink from it: the button's text colour at full strength, thinned for the
+ * cap's fill and edge (`Kbd`'s `inherit` variant, applied from outside). A
+ * plain cap is a card-coloured box in a muted ink, which on a white primary or
+ * a red destructive reads as a hole punched through the button. Every other
+ * variant keeps the plain cap: `secondary` is itself card-filled, and the rest
+ * sit on the surface around them, as the cap does.
+ */
+const FILLED_KBD =
+  "**:data-[slot=kbd]:border-current/25 **:data-[slot=kbd]:bg-current/10 **:data-[slot=kbd]:text-current";
+
+/**
  * `Button`'s class recipe, in a module of its own with no `"use client"`, so
  * a React Server Component can call it: a link that should look like a
  * button is an `<a className={buttonVariants({ variant, size })}>`, and in
@@ -28,8 +40,8 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary-hover",
-        destructive: "bg-destructive text-destructive-foreground hover:opacity-90",
+        default: ["bg-primary text-primary-foreground hover:bg-primary-hover", FILLED_KBD],
+        destructive: ["bg-destructive text-destructive-foreground hover:opacity-90", FILLED_KBD],
         outline: "border-border bg-transparent text-foreground hover:bg-element-hover",
         secondary: "bg-card text-foreground hover:bg-element-hover",
         ghost:

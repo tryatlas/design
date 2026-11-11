@@ -6,7 +6,9 @@ const inputVariants = cva(
     "w-full min-w-0 rounded border bg-panel-input text-foreground",
     "border-border transition-colors duration-fast ease-out-strong",
     "placeholder:text-muted-foreground",
-    "focus:border-border-strong",
+    // A text field draws no outline (decision 31): the border is the focus
+    // signal, in the keyboard ring's colour so it clears 3:1 on the fill.
+    "focus:border-ring",
     "disabled:cursor-not-allowed disabled:opacity-50",
     "aria-invalid:border-destructive",
   ],

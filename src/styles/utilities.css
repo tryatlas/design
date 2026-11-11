@@ -883,12 +883,30 @@
    Atlas used to remove the outline everywhere, which left it with no keyboard
    focus indicator at all. `:focus` stays bare — a mouse click should not draw
    a ring, and on `role="tab"` / `tabIndex=0` hosts a sticky `:focus` outline
-   reads as a stuck selection. `:focus-visible` is the keyboard case, and it
-   gets one ring: 2px of `--ring`, which every theme sets to its accent.
+   reads as a stuck selection.
+
+   The rule, in two parts:
+
+   - **Everything but a text field: one keyboard ring.** `:focus-visible` gets
+     2px of `--ring`, 2px out from the control. The gap is the surface the
+     control sits on, so the ring is measured against that surface (every
+     Atlas theme's `ring` clears 3:1 on all of them, WCAG 1.4.11) and never
+     touches a filled control's edge, where a white button and a grey ring
+     would blur into one shape. `ring` is a muted mid-tone in the Atlas
+     themes, not the ink: the ring says where the keyboard is without being
+     the brightest thing on screen. Whole pixels, so it renders evenly at 1x.
+   - **A text field draws no outline.** Browsers match `:focus-visible` on a
+     text input, a textarea and an editable region however they were focused
+     (a click, `autoFocus`, `.focus()`), so the ring drew on every click into
+     a field. A field shows focus with its own border instead: `Input`,
+     `Textarea`, `InputGroup` and the other fields lift theirs to `--ring` on
+     `:focus`, the same colour as the keyboard ring, and the caret is there
+     besides. `input` types that are not text (a checkbox, a range, a button)
+     keep the ring.
 
    A control that draws its own indicator opts out with `focus-ring-none`, or
    with Tailwind's `focus-visible:outline-none`. Both live in the utilities
-   layer, which is why these two rules have to sit in `@layer base` — an
+   layer, which is why these rules have to sit in `@layer base` — an
    unlayered rule would outrank every utility no matter its specificity.
    ────────────────────────────────────────────────────────────────────────── */
 @layer base {
@@ -898,7 +916,26 @@
 
   :focus-visible {
     outline: 2px solid var(--ring);
-    outline-offset: 1px;
+    outline-offset: 2px;
+  }
+
+  :where(
+    input:not(
+      [type="button"],
+      [type="checkbox"],
+      [type="color"],
+      [type="file"],
+      [type="image"],
+      [type="radio"],
+      [type="range"],
+      [type="reset"],
+      [type="submit"]
+    ),
+    textarea,
+    [contenteditable]:not([contenteditable="false"]),
+    [role="textbox"]
+  ):focus-visible {
+    outline: none;
   }
 }
 

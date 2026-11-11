@@ -110,10 +110,6 @@ function ComboboxContent({
           data-chips={!!anchor}
           className={cn(
             "group/combobox-content relative max-h-(--available-height) w-(--anchor-width) max-w-(--available-width) min-w-[calc(var(--anchor-width)+--spacing(7))] origin-(--transform-origin) animate-scale-in overflow-hidden rounded-lg border border-border bg-popover text-foreground shadow-md data-[chips=true]:min-w-(--anchor-width) *:data-[slot=input-group]:m-0.5 *:data-[slot=input-group]:mb-0 *:data-[slot=input-group]:h-control-md *:data-[slot=input-group]:border-none *:data-[slot=input-group]:bg-element-hover",
-            // The search field in the popup is focused the moment it opens and is
-            // the only field there, so the caret is the focus signal; the global
-            // ring would draw a square box inside the rounded field.
-            "**:data-[slot=input-group-control]:focus-visible:outline-none",
             POPUP_EXIT,
             className,
           )}
@@ -210,7 +206,7 @@ function ComboboxChips({
     <ComboboxPrimitive.Chips
       data-slot="combobox-chips"
       className={cn(
-        "flex min-h-(--control-md) flex-wrap items-center gap-1 rounded-sm border border-border bg-transparent px-2 py-0.5 text-xs transition-colors duration-fast ease-out-strong focus-within:border-border-strong has-data-[slot=combobox-chip]:px-1 has-aria-invalid:border-destructive",
+        "flex min-h-(--control-md) flex-wrap items-center gap-1 rounded-sm border border-border bg-transparent px-2 py-0.5 text-xs transition-colors duration-fast ease-out-strong focus-within:border-ring has-data-[slot=combobox-chip]:px-1 has-aria-invalid:border-destructive",
         className,
       )}
       {...props}

@@ -57,7 +57,7 @@ const meta = {
     docs: {
       description: {
         component:
-          "An input with things attached: a leading glyph, a trailing shortcut or button, a block of text above or below. One border around the lot, which strengthens while the control inside has focus.",
+          "An input with things attached: a leading glyph, a trailing shortcut or button, a block of text above or below. One border around the lot, which takes the focus ring's colour while the control inside has focus.",
       },
     },
   },
@@ -72,44 +72,44 @@ export const Disabled: Story = {
   parameters: contrastExempt("disabled"),
 };
 
-/** One ring around the group, the input drawing none and the border at rest. */
-async function expectOneRing(canvasElement: HTMLElement, input: HTMLElement) {
+/** No outline anywhere, and the group's border lifted to the ring's colour. */
+async function expectBorderFocus(canvasElement: HTMLElement, input: HTMLElement) {
   // Past the border's colour transition (`duration-fast`), so the check
   // reads where the border settles, not where it started.
   await new Promise((resolve) => setTimeout(resolve, 250));
   const group = canvasElement.querySelector<HTMLElement>('[data-slot="input-group"]')!;
   const groupStyle = getComputedStyle(group);
-  // The ring: the group's outline.
-  await expect(groupStyle.outlineStyle).toBe("solid");
-  // Not a second ring: the input draws none, and the group's border stays at rest.
+  // A text field draws no outline (decision 31), and nor does the group.
   await expect(getComputedStyle(input).outlineStyle).toBe("none");
-  const rest = canvasElement.ownerDocument.createElement("div");
-  rest.className = "border border-border";
-  canvasElement.append(rest);
-  await expect(groupStyle.borderTopColor).toBe(getComputedStyle(rest).borderTopColor);
-  rest.remove();
+  await expect(groupStyle.outlineStyle).toBe("none");
+  // The border is the indicator, in the ring's colour.
+  const ring = canvasElement.ownerDocument.createElement("div");
+  ring.className = "border border-ring";
+  canvasElement.append(ring);
+  await expect(groupStyle.borderTopColor).toBe(getComputedStyle(ring).borderTopColor);
+  ring.remove();
 }
 
 /**
- * Focused on mount, as a search field in a menu or a dialog is: one ring
- * around the whole field, and no second edge from the border lifting inside it.
+ * Focused on mount, as a search field in a menu or a dialog is: no outline,
+ * the group's border lifted to the ring's colour.
  */
 export const Autofocused: Story = {
   args: { autoFocus: true },
   play: async ({ canvasElement }) => {
     const input = within(canvasElement).getByRole("textbox");
     await waitFor(() => expect(input).toHaveFocus());
-    await expectOneRing(canvasElement, input);
+    await expectBorderFocus(canvasElement, input);
   },
 };
 
-/** Focused by a click: a text field is `:focus-visible` this way too, so it is the same one ring. */
+/** Focused by a click: a text field is `:focus-visible` this way too, and draws the same border, no ring. */
 export const Clicked: Story = {
   play: async ({ canvasElement }) => {
     const input = within(canvasElement).getByRole("textbox");
     await userEvent.click(input);
     await expect(input).toHaveFocus();
-    await expectOneRing(canvasElement, input);
+    await expectBorderFocus(canvasElement, input);
   },
 };
 export const Error: Story = { args: { invalid: true, defaultValue: "status:unknown" } };
