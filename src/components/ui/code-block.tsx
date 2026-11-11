@@ -72,7 +72,7 @@ function CodeFence({
       {language && (
         <span
           data-slot="code-fence-language"
-          className="mb-1 block text-3xs tracking-wide uppercase opacity-45 select-none"
+          className="mb-1 block text-3xs tracking-wide text-disabled uppercase select-none"
         >
           {language}
         </span>

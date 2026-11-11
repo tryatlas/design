@@ -112,7 +112,6 @@ export function SessionPipeline({ session, className }: SessionPipelineProps) {
                 "flex items-start gap-2",
                 step.state === "running" &&
                   "-mx-2 rounded-md border border-border-strong bg-element-selected p-2",
-                step.state === "upcoming" && "opacity-40",
               )}
             >
               <div className="relative mt-0.5 shrink-0">
@@ -144,6 +143,9 @@ export function SessionPipeline({ session, className }: SessionPipelineProps) {
                     step.state === "done" && "line-through opacity-50",
                     step.state === "running" && "text-foreground",
                     step.state === "failed" && "text-error",
+                    // Dimmed by the text ladder, not opacity: opacity took it
+                    // under 4.5:1.
+                    step.state === "upcoming" && "text-muted-foreground",
                   )}
                 >
                   <span className="sr-only">{STATE_LABEL[step.state]}: </span>

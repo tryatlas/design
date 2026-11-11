@@ -254,8 +254,19 @@ function MessageRow({
           <div className="text-base text-disabled italic">{labels.messageDeleted}</div>
         ) : (
           <>
-            <div className={cn(message.send === "sending" && "opacity-60")}>
-              <div className="min-w-0 text-base text-secondary-foreground">{body}</div>
+            <div>
+              {/* Sending dims the body one step down the text ladder, not by
+                  opacity, which took it (and the "sending…" line) under 4.5:1. */}
+              <div
+                className={cn(
+                  "min-w-0 text-base",
+                  message.send === "sending"
+                    ? "text-muted-foreground"
+                    : "text-secondary-foreground",
+                )}
+              >
+                {body}
+              </div>
               {attachments && <div className="mt-1.5 flex flex-col gap-1.5">{attachments}</div>}
               {references && <div className="mt-1.5 flex flex-col gap-1.5">{references}</div>}
               <MetaLine message={message} labels={labels} onRetry={onRetry} />
