@@ -3,7 +3,7 @@ import { ArrowRight, Loader2, Plus, Trash2 } from "lucide-react";
 import { expect, userEvent, within } from "storybook/test";
 import { Button } from "../../src/ui/button.tsx";
 import { Icon } from "../../src/ui/icon.tsx";
-import { Kbd } from "../../src/ui/kbd.tsx";
+import { Kbd, KbdKeys } from "../../src/ui/kbd.tsx";
 
 const VARIANTS = [
   "default",
@@ -117,8 +117,28 @@ export const WithIcon: Story = {
       </Button>
       <Button {...args} variant="default">
         Send
-        <Kbd variant="inverse">↵</Kbd>
+        <Kbd>↵</Kbd>
       </Button>
+    </div>
+  ),
+};
+
+/**
+ * Keycaps inside a button. On a colour-filled variant (default, destructive)
+ * the caps take their ink from the button: its text colour at full strength,
+ * thinned for the fill and edge. The other variants keep the plain cap, which
+ * already matches a card fill or the surface around the button.
+ */
+export const WithKeycaps: Story = {
+  args: { size: "sm" },
+  render: (args) => (
+    <div className="flex flex-wrap items-center gap-2">
+      {VARIANTS.map((variant) => (
+        <Button key={variant} {...args} variant={variant}>
+          {variant}
+          <KbdKeys keys={["⌘", "↵"]} platform="mac" />
+        </Button>
+      ))}
     </div>
   ),
 };

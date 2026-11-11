@@ -10,9 +10,10 @@ const kbdVariants = cva(
   ],
   {
     variants: {
-      // `inverse` is a cap sitting on a primary-filled control (the ↵ on a
-      // dialog's default action): the background colour, at low alpha for the
-      // fill and edge, so it reads on whatever the primary token is.
+      // `inverse` is a cap sitting on a primary fill that is not a `Button`:
+      // the background colour, at low alpha for the fill and edge. Inside a
+      // `default` or `destructive` `Button` any cap already takes the button's
+      // ink, whatever its own variant (`button-variants.ts`).
       variant: {
         default: "",
         inverse: "border-background/20 bg-background/10 text-background",
