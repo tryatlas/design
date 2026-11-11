@@ -3,6 +3,11 @@ import { MotionGlobalConfig } from "motion/react";
 import { BUILT_IN_THEMES, SCALE_PRESETS } from "../stories/lib/themes.ts";
 import "./preview.css";
 
+// Under `bun run test:storybook`, motion jumps to its end state. axe reads
+// colours from the rendered frame, so an entrance fade caught at opacity 0.1
+// reads as a contrast failure that no user ever sees.
+if ("__vitest_browser__" in globalThis) MotionGlobalConfig.skipAnimations = true;
+
 /**
  * The toolbar's globals, and how they reach the DOM.
  *
@@ -23,11 +28,6 @@ import "./preview.css";
  * All four round-trip through the URL:
  * `?path=/story/primitives-button--default&globals=theme:dracula;appearance:light;scale:1.15;viewport:phone`
  */
-// Under `bun run test:storybook`, motion jumps to its end state. axe reads
-// colours from the rendered frame, so an entrance fade caught at opacity 0.1
-// reads as a contrast failure that no user ever sees.
-if ("__vitest_browser__" in globalThis) MotionGlobalConfig.skipAnimations = true;
-
 const withAtlasTheme: Decorator = (Story, context) => {
   const { theme, appearance, scale } = context.globals as {
     theme?: string;

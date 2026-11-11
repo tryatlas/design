@@ -14,7 +14,9 @@
  *                 raising it is a palette decision of its own.
  *   every-theme   The story draws every built-in theme at once, including
  *                 the ported third-party palettes, whose colours Atlas does
- *                 not restate (see `text.disabled` in `keys.toml`). The run
+ *                 not restate (see `text.disabled` in `keys.toml`). Known
+ *                 open failures there: the 12% hue fills behind `Tag` and
+ *                 `Pill` in light themes, Atlas's own included. The run
  *                 checks the default theme everywhere else.
  */
 export function contrastExempt(_reason: "disabled" | "code-content" | "every-theme") {

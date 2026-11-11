@@ -255,8 +255,9 @@ function MessageRow({
         ) : (
           <>
             <div>
-              {/* Sending dims the body one step down the text ladder, not by
-                  opacity, which took it (and the "sending…" line) under 4.5:1. */}
+              {/* Sending dims the body text one step down the text ladder, not
+                  by opacity, which took it (and the "sending…" line) under
+                  4.5:1. Attachments and references keep their own colours. */}
               <div
                 className={cn(
                   "min-w-0 text-base",

@@ -140,11 +140,11 @@ export function SessionPipeline({ session, className }: SessionPipelineProps) {
                 <div
                   className={cn(
                     "truncate text-xs font-medium",
-                    step.state === "done" && "line-through opacity-50",
+                    step.state === "done" && "text-muted-foreground line-through",
                     step.state === "running" && "text-foreground",
                     step.state === "failed" && "text-error",
-                    // Dimmed by the text ladder, not opacity: opacity took it
-                    // under 4.5:1.
+                    // Done and upcoming dim by the text ladder, not opacity,
+                    // which can take text under 4.5:1.
                     step.state === "upcoming" && "text-muted-foreground",
                   )}
                 >
