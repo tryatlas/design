@@ -1,4 +1,5 @@
 import type { Decorator, Preview } from "@storybook/react-vite";
+import { MotionGlobalConfig } from "motion/react";
 import { BUILT_IN_THEMES, SCALE_PRESETS } from "../stories/lib/themes.ts";
 import "./preview.css";
 
@@ -22,6 +23,11 @@ import "./preview.css";
  * All four round-trip through the URL:
  * `?path=/story/primitives-button--default&globals=theme:dracula;appearance:light;scale:1.15;viewport:phone`
  */
+// Under `bun run test:storybook`, motion jumps to its end state. axe reads
+// colours from the rendered frame, so an entrance fade caught at opacity 0.1
+// reads as a contrast failure that no user ever sees.
+if ("__vitest_browser__" in globalThis) MotionGlobalConfig.skipAnimations = true;
+
 const withAtlasTheme: Decorator = (Story, context) => {
   const { theme, appearance, scale } = context.globals as {
     theme?: string;
@@ -89,20 +95,14 @@ const preview: Preview = {
   },
   parameters: {
     // Every story is an axe run under `bun run test:storybook`, and a
-    // violation fails it. A story whose violation is the component's own bug
-    // sets `a11y: { test: "todo" }` with a comment naming the axe rule.
-    //
-    // Except `color-contrast`, which the test run skips and the a11y panel
-    // still shows. Its failures are the palette's, not a story's: desktop's
-    // themes are the source of truth, and they set secondary text below
-    // 4.5:1 on purpose (`muted-foreground` on `background` is 2.7:1 in Atlas
-    // dark), as do the 12% hue fills behind `Tag` and `Pill` text in light
-    // themes. A failure there is a theme decision, made in desktop.
+    // violation fails it, `color-contrast` included: text clears 4.5:1 on
+    // the surfaces it sits on, in the default theme (Atlas dark) the run
+    // renders. A story whose violation is the component's own bug sets
+    // `a11y: { test: "todo" }` with a comment naming the axe rule. One that
+    // is low-contrast on purpose — a disabled state, which WCAG exempts —
+    // turns `color-contrast` off for that story alone, and says why.
     a11y: {
       test: "error",
-      config: {
-        rules: [{ id: "color-contrast", enabled: !("__vitest_browser__" in globalThis) }],
-      },
     },
     layout: "padded",
     backgrounds: { disable: true },

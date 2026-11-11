@@ -820,9 +820,10 @@ to pass, and `@storybook/addon-a11y`'s axe run has to find nothing, since
 story's controls to fix a violation. When the violation is the component's
 own, set `parameters: { a11y: { test: "todo" } }` on that story with a
 comment naming the axe rule and the bug: it shows as a warning, and the
-story says what to fix. The run skips `color-contrast`, whose failures are
-the palette's (desktop sets secondary text below 4.5:1 on purpose); the a11y
-panel in Storybook still reports it. Install the browser once with
+story says what to fix. `color-contrast` runs too, in the default theme
+(Atlas dark). A story whose low contrast is deliberate (a disabled state,
+code coloured by a syntax palette, every theme at once) turns that one rule
+off with `contrastExempt(reason)` from `stories/lib/a11y.ts`. Install the browser once with
 `bunx playwright install chromium` (add `--with-deps` on Linux, as CI does).
 
 A primitive at `src/ui/<name>.tsx` keeps its stories in

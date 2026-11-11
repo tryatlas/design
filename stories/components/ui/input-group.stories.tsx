@@ -11,6 +11,7 @@ import {
 } from "../../../src/components/ui/input-group.tsx";
 import { Icon } from "../../../src/ui/icon.tsx";
 import { Kbd } from "../../../src/ui/kbd.tsx";
+import { contrastExempt } from "../../lib/a11y.ts";
 
 interface DemoProps {
   placeholder?: string;
@@ -66,7 +67,10 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {};
-export const Disabled: Story = { args: { disabled: true } };
+export const Disabled: Story = {
+  args: { disabled: true },
+  parameters: contrastExempt("disabled"),
+};
 
 /** One ring around the group, the input drawing none and the border at rest. */
 async function expectOneRing(canvasElement: HTMLElement, input: HTMLElement) {

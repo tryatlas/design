@@ -5,6 +5,7 @@ import { expect, within } from "storybook/test";
 
 import { StreamingMarkdown } from "../../../src/components/session/streaming-markdown.tsx";
 import { streamingSource } from "./fixtures.ts";
+import { contrastExempt } from "../../lib/a11y.ts";
 
 const REHYPE = [rehypeHighlight];
 
@@ -73,6 +74,7 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Static: Story = {
+  parameters: contrastExempt("code-content"),
   // A task's checkbox is named for its item.
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);

@@ -14,6 +14,7 @@ import { IconButton } from "../../../src/ui/icon-button.tsx";
 import { Icon } from "../../../src/ui/icon.tsx";
 import { Hint } from "../../../src/ui/tooltip.tsx";
 import { SAMPLE } from "./editor.fixtures.ts";
+import { contrastExempt } from "../../lib/a11y.ts";
 
 const ROOT = "/Users/me/atlas";
 const crumbs = (path: string, dirty?: boolean) => (
@@ -69,14 +70,18 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {};
+export const Default: Story = {
+  parameters: contrastExempt("code-content"),
+};
 
 export const Dirty: Story = {
+  parameters: contrastExempt("code-content"),
   args: { breadcrumbs: crumbs("src/features/terminal/lib/format-duration.ts", true) },
 };
 
 /** The file changed on disk under unsaved edits. */
 export const DiskChanged: Story = {
+  parameters: contrastExempt("code-content"),
   args: {
     breadcrumbs: crumbs("src/features/terminal/lib/format-duration.ts", true),
     actions: (
@@ -171,6 +176,7 @@ export const WithReplace: Story = {
 };
 
 export const LongPath: Story = {
+  parameters: contrastExempt("code-content"),
   args: {
     breadcrumbs: crumbs(
       "src/features/editor/components/settings/a-very-deeply-nested-folder/file-surface-chrome-with-a-long-name.tsx",
@@ -180,6 +186,7 @@ export const LongPath: Story = {
 };
 
 export const Phone: Story = {
+  parameters: contrastExempt("code-content"),
   ...WithFind,
   args: {
     ...WithFind.args,

@@ -19,6 +19,7 @@ import { Button } from "../../src/ui/button.tsx";
 import { DialogTrigger } from "../../src/ui/dialog.tsx";
 import { Icon } from "../../src/ui/icon.tsx";
 import { Kbd } from "../../src/ui/kbd.tsx";
+import { contrastExempt } from "../lib/a11y.ts";
 
 const ROWS = [
   { icon: Plus, label: "New session", shortcut: "⌘N" },
@@ -194,6 +195,7 @@ export const Compact: Story = {
  *  `aria-selected`, for a picker that is not a listbox yet (ATL-718).
  *  `data-active` and `data-disabled` still mark the rows. */
 export const CompactWithoutRoles: Story = {
+  parameters: contrastExempt("disabled"),
   render: () => <InlinePicker listbox={false} />,
   tags: ["!autodocs"],
   play: async ({ canvasElement }) => {
