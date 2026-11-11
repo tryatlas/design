@@ -400,6 +400,12 @@ export const THEME_KEY_REGISTRY = [
    * `terminal.ansi.bright_black` in the same themes. The remaining floor (`one-dark`
    * at 1.98:1) comes from a palette Atlas did not author, and restating someone else's
    * secondary text colour is exactly what a theme key must not do.
+   *
+   * Atlas's own themes (`atlas`, `atlas-mono`, `chyral`, `phosphor`) go further
+   * and hold every text tier to 4.5:1 on all five surfaces, popover included.
+   * There the 0.2 mix cannot work: a `muted-foreground` bright enough for the
+   * derived value to pass would sit above `secondary-foreground`. So those themes
+   * set this key explicitly, at the floor, a step below `muted-foreground`.
    */
   define("text.disabled", {
     base: "muted-foreground",
