@@ -34,7 +34,11 @@ function AccordionTrigger({ className, children, ...props }: AccordionPrimitive.
       <AccordionPrimitive.Trigger
         data-slot="accordion-trigger"
         className={cn(
-          "group/accordion-trigger relative flex flex-1 items-center justify-between gap-6 px-3 py-2 text-left text-xs font-medium text-secondary-foreground outline-none",
+          "group/accordion-trigger relative flex flex-1 items-center justify-between gap-6 px-3 py-2 text-left text-xs font-medium text-secondary-foreground",
+          // The package's focus ring (the global `:focus-visible` outline, as
+          // `Button` gets it), drawn inset: the root's `overflow-hidden`
+          // would clip the default 1px outer offset at the edges.
+          "focus-visible:-outline-offset-2",
           "transition-colors duration-fast ease-out-strong hover:bg-element-hover hover:text-foreground aria-expanded:text-foreground",
           "aria-disabled:cursor-not-allowed aria-disabled:opacity-50",
           className,
