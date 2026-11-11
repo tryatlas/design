@@ -25,7 +25,7 @@
   --destructive-foreground: #000000;
   --border: #1e1e1e;
   --input: #1e1e1e;
-  --ring: #ffffff;
+  --ring: #808080;
   --chart-1: #ffffff;
   --chart-2: #9ecf8a;
   --chart-3: #e0b070;
@@ -38,7 +38,7 @@
   --sidebar-accent: #0f0f0f;
   --sidebar-accent-foreground: #ffffff;
   --sidebar-border: #141414;
-  --sidebar-ring: #ffffff;
+  --sidebar-ring: #808080;
   --radius: 8px;
   --tracking-normal: 0em;
   --spacing: 0.25rem;
@@ -157,7 +157,7 @@
   --destructive-foreground: #ffffff;
   --border: #e0e0e0;
   --input: #e0e0e0;
-  --ring: #000000;
+  --ring: #757575;
   --chart-1: #000000;
   --chart-2: #3f7f2f;
   --chart-3: #b06000;
@@ -170,7 +170,7 @@
   --sidebar-accent: #f2f2f2;
   --sidebar-accent-foreground: #000000;
   --sidebar-border: #ededed;
-  --sidebar-ring: #000000;
+  --sidebar-ring: #757575;
   --radius: 8px;
   --tracking-normal: 0em;
   --spacing: 0.25rem;
@@ -289,7 +289,7 @@
   --destructive-foreground: #000000;
   --border: #2a2a2a;
   --input: #2a2a2a;
-  --ring: #ffff00;
+  --ring: #8f8f00;
   --chart-1: #ffff00;
   --chart-2: #e6e6e6;
   --chart-3: #c2c2c2;
@@ -302,7 +302,7 @@
   --sidebar-accent: #1a1a1a;
   --sidebar-accent-foreground: #d0d0d0;
   --sidebar-border: #1a1a1a;
-  --sidebar-ring: #ffff00;
+  --sidebar-ring: #8f8f00;
   --radius: 8px;
   --tracking-normal: 0em;
   --spacing: 0.25rem;
@@ -1345,7 +1345,7 @@
   --destructive-foreground: #140f06;
   --border: #2a2114;
   --input: #2a2114;
-  --ring: #c9a35a;
+  --ring: #9f8047;
   --chart-1: #c9a35a;
   --chart-2: #98c379;
   --chart-3: #56b6c2;
@@ -1358,7 +1358,7 @@
   --sidebar-accent: #171109;
   --sidebar-accent-foreground: #ece5d5;
   --sidebar-border: #1a140c;
-  --sidebar-ring: #c9a35a;
+  --sidebar-ring: #9f8047;
   --radius: 8px;
   --tracking-normal: 0em;
   --spacing: 0.25rem;
@@ -2666,7 +2666,7 @@
   --destructive-foreground: #170900;
   --border: #3d2200;
   --input: #3d2200;
-  --ring: #ff9500;
+  --ring: #c27100;
   --chart-1: #ff9500;
   --chart-2: #98c379;
   --chart-3: #d19a66;
@@ -2679,7 +2679,7 @@
   --sidebar-accent: #1a0d00;
   --sidebar-accent-foreground: #ffb000;
   --sidebar-border: #1f1200;
-  --sidebar-ring: #ff9500;
+  --sidebar-ring: #c27100;
   --radius: 8px;
   --tracking-normal: 0em;
   --spacing: 0.25rem;

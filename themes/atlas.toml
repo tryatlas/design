@@ -24,7 +24,10 @@ license = "Apache-2.0"
 "destructive-foreground" = "#000000"
 "border" = "#1e1e1e"
 "input" = "#1e1e1e"
-"ring" = "#ffffff"
+# The keyboard focus ring: a mid grey, not the ink. It clears 3:1 on every
+# surface (5.3:1 on the background, 3.4:1 on a popover row that is pressed)
+# without reading as a second, brighter control.
+"ring" = "#808080"
 # The first series is the theme's ink, not a hue: Atlas is monochrome-first,
 # and on a black ground the busiest series reads best as plain white. The other
 # four stay muted so they separate from it rather than compete.
@@ -40,7 +43,7 @@ license = "Apache-2.0"
 "sidebar-accent" = "#0f0f0f"
 "sidebar-accent-foreground" = "#ffffff"
 "sidebar-border" = "#141414"
-"sidebar-ring" = "#ffffff"
+"sidebar-ring" = "#808080"
 "radius" = "8px"
 "tracking-normal" = "0em"
 "spacing" = "0.25rem"
@@ -134,7 +137,9 @@ pink = "#f0a0c8"
 "destructive-foreground" = "#ffffff"
 "border" = "#e0e0e0"
 "input" = "#e0e0e0"
-"ring" = "#000000"
+# Mirrors the dark variant: 4.6:1 on the background, 3.4:1 on a pressed
+# popover row.
+"ring" = "#757575"
 # Mirrors the dark variant: the ink colour of this appearance.
 "chart-1" = "#000000"
 "chart-2" = "#3f7f2f"
@@ -148,7 +153,7 @@ pink = "#f0a0c8"
 "sidebar-accent" = "#f2f2f2"
 "sidebar-accent-foreground" = "#000000"
 "sidebar-border" = "#ededed"
-"sidebar-ring" = "#000000"
+"sidebar-ring" = "#757575"
 "radius" = "8px"
 "tracking-normal" = "0em"
 "spacing" = "0.25rem"
