@@ -294,11 +294,26 @@ export const TerminalOutputLine = React.memo(function TerminalOutputLine({
             style={segment.style}
             className={className}
             title={link ? LINK_TITLE[link.kind] : undefined}
+            // A link is a real control for the keyboard as well: Tab reaches
+            // it and Enter opens it. The pointer still needs ⌘/Ctrl, so a
+            // plain click keeps selecting output text.
+            role={link ? "link" : undefined}
+            tabIndex={link ? 0 : undefined}
             onClick={
               link
                 ? (e) => {
                     if (e.metaKey || e.ctrlKey)
                       onLinkActivate!(link.target ?? link.text, link.kind);
+                  }
+                : undefined
+            }
+            onKeyDown={
+              link
+                ? (e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      onLinkActivate!(link.target ?? link.text, link.kind);
+                    }
                   }
                 : undefined
             }

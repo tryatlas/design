@@ -18,6 +18,7 @@ import { Badge } from "../../../src/ui/badge.tsx";
 import { Button } from "../../../src/ui/button.tsx";
 import { Icon } from "../../../src/ui/icon.tsx";
 import { INVERSE, LINKED, STYLED_RUNS } from "./terminal-output.fixtures.ts";
+import { contrastExempt } from "../../lib/a11y.ts";
 
 const BUILD = `vite v8.3.5 building for production...
 transforming (412) src/features/terminal/components/block-terminal.tsx
@@ -79,6 +80,7 @@ export const Succeeded: Story = {
 };
 
 export const Failed: Story = {
+  parameters: contrastExempt("code-content"),
   args: {
     command: "bun run test",
     exitCode: 1,
@@ -106,6 +108,7 @@ const ansiLines: TerminalLine[] = [0, 8].map((offset) => ({
 }));
 
 export const AnsiColours: Story = {
+  parameters: contrastExempt("code-content"),
   args: { command: "colortest", children: <TerminalOutput lines={ansiLines} /> },
 };
 
@@ -164,6 +167,7 @@ const longLines: TerminalLine[] = Array.from({ length: 300 }, (_, i) => ({
 }));
 
 export const LongOutput: Story = {
+  parameters: contrastExempt("code-content"),
   args: { command: "find packages -name '*.ts'", children: <TerminalOutput lines={longLines} /> },
 };
 
@@ -186,6 +190,7 @@ export const FromToolCall: Story = {
 
 /** A terminal pane's history: several blocks in a column. */
 export const Session: Story = {
+  parameters: contrastExempt("code-content"),
   render: () => (
     <>
       <TerminalBlock command="" running={false}>
@@ -221,6 +226,7 @@ export const Session: Story = {
 };
 
 export const StyledRuns: Story = {
+  parameters: contrastExempt("code-content"),
   args: { command: "bun run test", exitCode: 1, children: <TerminalOutput lines={STYLED_RUNS} /> },
 };
 
@@ -247,6 +253,7 @@ export const Links: Story = {
 };
 
 export const SearchHighlight: Story = {
+  parameters: contrastExempt("code-content"),
   args: {
     command: "bun run build",
     commandHighlight: "dist",
@@ -263,6 +270,7 @@ export const SearchHighlight: Story = {
 };
 
 export const Inverse: Story = {
+  parameters: contrastExempt("code-content"),
   args: { command: "vim README.md", children: <TerminalOutput lines={INVERSE} /> },
 };
 

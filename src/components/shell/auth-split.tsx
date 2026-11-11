@@ -45,7 +45,9 @@ function AuthSplit({
 }) {
   return (
     <div className="flex h-svh overflow-hidden bg-background">
-      <div className="relative flex min-w-0 flex-1 flex-col px-6 py-8">
+      {/* The page's `main` landmark: the form column is the primary content,
+          the aside beside it is complementary. */}
+      <main className="relative flex min-w-0 flex-1 flex-col px-6 py-8">
         <DashedRails fade />
         <div className="flex h-8 shrink-0 items-center">{back}</div>
 
@@ -61,7 +63,7 @@ function AuthSplit({
         {/* Balances the back-link strip so the form sits on the true optical
             centre rather than 16px below it. */}
         <div aria-hidden="true" className="h-8 shrink-0" />
-      </div>
+      </main>
 
       <aside className="relative hidden w-1/2 shrink-0 overflow-hidden border-l border-border-subtle bg-panel lg:block">
         {/* Oversized and offset past the corner, so only the northern

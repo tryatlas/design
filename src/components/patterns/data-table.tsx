@@ -187,11 +187,26 @@ function DataTable<T>({
                   <tr
                     key={id}
                     onClick={onRowClick ? () => onRowClick(row) : undefined}
+                    // A clickable row is a keyboard stop too: Tab reaches it,
+                    // Enter or Space opens it, as a click does. The ring is
+                    // drawn inset, since the scroller clips anything outside.
+                    tabIndex={onRowClick ? 0 : undefined}
+                    onKeyDown={
+                      onRowClick
+                        ? (e) => {
+                            if (e.target !== e.currentTarget) return;
+                            if (e.key === "Enter" || e.key === " ") {
+                              e.preventDefault();
+                              onRowClick(row);
+                            }
+                          }
+                        : undefined
+                    }
                     aria-selected={selected || undefined}
                     className={cn(
                       "group/row transition-colors duration-fast ease-out-strong",
                       selected ? "bg-element-selected" : "hover:bg-element-hover",
-                      onRowClick && "cursor-pointer",
+                      onRowClick && "cursor-pointer focus-visible:-outline-offset-2",
                     )}
                   >
                     {columns.map((col) => (

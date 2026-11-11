@@ -6,12 +6,15 @@ import {
 } from "../../../src/components/code-surface/code-surface.ts";
 import { EditorPreview } from "../../../src/components/code-surface/editor-preview.tsx";
 import { SAMPLE } from "./editor.fixtures.ts";
+import { contrastExempt } from "../../lib/a11y.ts";
 
 const meta = {
   title: "Patterns/EditorPreview",
   component: EditorPreview,
   args: { lines: SAMPLE },
   parameters: {
+    // Every story here is syntax-coloured code and its gutter.
+    ...contrastExempt("code-content"),
     docs: {
       description: {
         component:

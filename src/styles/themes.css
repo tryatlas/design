@@ -18,7 +18,7 @@
   --secondary: #0f0f0f;
   --secondary-foreground: #aaaaaa;
   --muted: #171717;
-  --muted-foreground: #585858;
+  --muted-foreground: #939393;
   --accent: #171717;
   --accent-foreground: #ffffff;
   --destructive: #f44747;
@@ -57,7 +57,7 @@
   --element-highlight: rgba(255, 255, 255, 0.06);
   --primary-hover: #ffffff;
   --primary-muted: rgba(255, 255, 255, 0.06);
-  --text-disabled: #3f3f3f;
+  --text-disabled: #858585;
   --status-success-foreground: #9ecf8a;
   --status-warning-foreground: #ffff00;
   --status-error-foreground: #f44747;
@@ -189,7 +189,7 @@
   --element-highlight: rgba(0, 0, 0, 0.06);
   --primary-hover: #000000;
   --primary-muted: rgba(0, 0, 0, 0.06);
-  --text-disabled: #7e7e7e;
+  --text-disabled: #6c6c6c;
   --status-success-foreground: #3f7f2f;
   --status-warning-foreground: #8f7a00;
   --status-error-foreground: #c62828;
@@ -280,9 +280,9 @@
   --primary: #ffff00;
   --primary-foreground: #000000;
   --secondary: #1a1a1a;
-  --secondary-foreground: #8a8a8a;
+  --secondary-foreground: #a4a4a4;
   --muted: #1a1a1a;
-  --muted-foreground: #8a8a8a;
+  --muted-foreground: #a4a4a4;
   --accent: #1a1a1a;
   --accent-foreground: #d0d0d0;
   --destructive: #b0b0b0;
@@ -321,7 +321,7 @@
   --element-highlight: rgba(208, 208, 208, 0.06);
   --primary-hover: #f7f953;
   --primary-muted: rgba(255, 255, 0, 0.06);
-  --text-disabled: #656565;
+  --text-disabled: #969696;
   --status-success-foreground: #b0b0b0;
   --status-warning-foreground: #d4d4d4;
   --status-error-foreground: #b0b0b0;
@@ -412,9 +412,9 @@
   --primary: #8a7500;
   --primary-foreground: #ffffff;
   --secondary: #f4f4f4;
-  --secondary-foreground: #6b6b6b;
+  --secondary-foreground: #5d5d5d;
   --muted: #f4f4f4;
-  --muted-foreground: #6b6b6b;
+  --muted-foreground: #5d5d5d;
   --accent: #f4f4f4;
   --accent-foreground: #2e2e2e;
   --destructive: #545454;
@@ -453,7 +453,7 @@
   --element-highlight: rgba(46, 46, 46, 0.06);
   --primary-hover: #7b6a18;
   --primary-muted: rgba(138, 117, 0, 0.06);
-  --text-disabled: #878787;
+  --text-disabled: #696969;
   --status-success-foreground: #4f4f4f;
   --status-warning-foreground: #2b2b2b;
   --status-error-foreground: #4f4f4f;
@@ -478,7 +478,7 @@
   --terminal-ansi-bright-magenta: #1c1c1c;
   --terminal-ansi-bright-cyan: #5b5b5b;
   --terminal-ansi-bright-white: #4f4f4f;
-  --syntax-comment: #6b6b6b;
+  --syntax-comment: #5d5d5d;
   --syntax-keyword: #191919;
   --syntax-string: #4f4f4f;
   --syntax-number: #3d3d3d;
@@ -1338,7 +1338,7 @@
   --secondary: #171109;
   --secondary-foreground: #a99f8c;
   --muted: #1d1610;
-  --muted-foreground: #645c47;
+  --muted-foreground: #9a927f;
   --accent: #1d1610;
   --accent-foreground: #ece5d5;
   --destructive: #f44747;
@@ -1377,7 +1377,7 @@
   --element-highlight: rgba(236, 229, 213, 0.06);
   --primary-hover: #cead6e;
   --primary-muted: rgba(201, 163, 90, 0.06);
-  --text-disabled: #504938;
+  --text-disabled: #8b8473;
   --status-success-foreground: #98c379;
   --status-warning-foreground: #e5c07b;
   --status-error-foreground: #f44747;
@@ -1509,7 +1509,7 @@
   --element-highlight: rgba(46, 38, 24, 0.06);
   --primary-hover: #7b5f20;
   --primary-muted: rgba(138, 106, 31, 0.06);
-  --text-disabled: #867c64;
+  --text-disabled: #6c634e;
   --status-success-foreground: #4c8a2f;
   --status-warning-foreground: #9a7511;
   --status-error-foreground: #c0392b;
@@ -2659,7 +2659,7 @@
   --secondary: #1a0d00;
   --secondary-foreground: #cc8800;
   --muted: #291600;
-  --muted-foreground: #7e5300;
+  --muted-foreground: #be8100;
   --accent: #291600;
   --accent-foreground: #ffb000;
   --destructive: #f44747;
@@ -2698,7 +2698,7 @@
   --element-highlight: rgba(255, 176, 0, 0.06);
   --primary-hover: #ff9900;
   --primary-muted: rgba(255, 149, 0, 0.06);
-  --text-disabled: #644100;
+  --text-disabled: #b27900;
   --status-success-foreground: #98c379;
   --status-warning-foreground: #e5c07b;
   --status-error-foreground: #f44747;
@@ -2830,7 +2830,7 @@
   --element-highlight: rgba(74, 44, 0, 0.06);
   --primary-hover: #995700;
   --primary-muted: rgba(168, 95, 0, 0.06);
-  --text-disabled: #946d3b;
+  --text-disabled: #855f2f;
   --status-success-foreground: #4c8a2f;
   --status-warning-foreground: #8d6b0f;
   --status-error-foreground: #c0261f;

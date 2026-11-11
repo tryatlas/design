@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { HueDot, LabelMark, Tag } from "../../../src/components/ui/tag.tsx";
 import { HUES } from "../../../src/lib/hue.ts";
 import { BUILT_IN_THEMES } from "../../lib/themes.ts";
+import { contrastExempt } from "../../lib/a11y.ts";
 
 const meta = {
   title: "Components/Tag",
@@ -44,6 +45,7 @@ export const AllHues: Story = {
  * every row a palette has one.
  */
 export const EveryTheme: Story = {
+  parameters: contrastExempt("every-theme"),
   render: (args) => (
     <div className="flex flex-col gap-1">
       {BUILT_IN_THEMES.flatMap((theme) =>

@@ -309,7 +309,7 @@ export const TurnRow = memo(function TurnRow({
           {outcome.error?.kind === "auth" ? (
             <>
               <p className="font-medium">Sign in again to continue</p>
-              <p className="mt-0.5 opacity-80">{outcome.error.message}</p>
+              <p className="mt-0.5">{outcome.error.message}</p>
             </>
           ) : (
             (outcome.error?.message ?? "The turn failed.")
@@ -984,7 +984,7 @@ function PlanList({ items, className }: { items: PlanItem[]; className?: string 
           data-status={item.status}
           className={cn(
             "flex min-h-5.5 items-start gap-2 text-base",
-            item.status === "completed" && "text-muted-foreground line-through opacity-60",
+            item.status === "completed" && "text-muted-foreground line-through",
             item.status === "in_progress" && "text-foreground",
             item.status === "pending" && "text-secondary-foreground",
           )}
