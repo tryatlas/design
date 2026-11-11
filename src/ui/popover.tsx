@@ -53,6 +53,8 @@ function PopoverContent({
   surface = "default",
   anchor,
   arrow = false,
+  flush = false,
+  instant = false,
   children,
   ...props
 }: PopoverPrimitive.Popup.Props &
@@ -62,6 +64,18 @@ function PopoverContent({
   > & {
     /** Draw an arrow pointing at the anchor. */
     arrow?: boolean;
+    /**
+     * No padding and no gap: the content runs to the popup's edge (a list
+     * with its own rows, a picker with its own header). Widths stay at the
+     * call site.
+     */
+    flush?: boolean;
+    /**
+     * No entrance and no exit: for a popup opened by typing (an @-mention
+     * list, a slash picker), which would otherwise replay its scale-in on
+     * every keystroke that reopens it.
+     */
+    instant?: boolean;
     /**
      * `tinted` is the two-surface recipe the agent/model picker and org
      * switcher use: the popup is the foreground at 4% over the background (the
@@ -102,8 +116,10 @@ function PopoverContent({
                 : "bg-popover p-2.5 shadow-md",
             "border border-border text-foreground",
             "text-sm outline-none",
-            "origin-[var(--transform-origin)] animate-scale-in",
-            POPUP_EXIT,
+            flush && "gap-0 p-0",
+            instant
+              ? "animate-none"
+              : ["origin-[var(--transform-origin)] animate-scale-in", POPUP_EXIT],
             className,
           )}
           {...props}

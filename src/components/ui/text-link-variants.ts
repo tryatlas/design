@@ -16,12 +16,14 @@ import { cva } from "class-variance-authority";
  *
  *   default  foreground ink: a link that is the point of its line
  *   muted    secondary ink, foreground on hover: a link beside the content
+ *
+ * `variant="inline"` is the running-text rule for a link the app places in a
+ * sentence itself (a help line, a description): underlined at rest.
  */
 const linkVariants = cva(
   [
-    "cursor-pointer rounded-sm no-underline underline-offset-2",
+    "cursor-pointer rounded-sm underline-offset-2",
     "transition-colors duration-fast ease-out-strong",
-    "hover:underline focus-visible:underline",
   ],
   {
     variants: {
@@ -29,8 +31,12 @@ const linkVariants = cva(
         default: "text-foreground",
         muted: "text-secondary-foreground hover:text-foreground focus-visible:text-foreground",
       },
+      variant: {
+        standalone: "no-underline hover:underline focus-visible:underline",
+        inline: "underline",
+      },
     },
-    defaultVariants: { tone: "default" },
+    defaultVariants: { tone: "default", variant: "standalone" },
   },
 );
 

@@ -47,6 +47,11 @@ function TableFooter({ className, ...props }: React.ComponentProps<"tfoot">) {
   );
 }
 
+/**
+ * `data-muted` dims a row's cells to 50%, the one disabled look, for a row
+ * that is shown but not in play (a model this workspace has not been
+ * granted, a link that has run out). The row's own hover and selection stay.
+ */
 function TableRow({ className, ...props }: React.ComponentProps<"tr">) {
   return (
     <tr
@@ -54,6 +59,7 @@ function TableRow({ className, ...props }: React.ComponentProps<"tr">) {
       className={cn(
         "border-b border-border-subtle transition-colors duration-fast ease-out-strong",
         "hover:bg-element-hover data-selected:bg-element-selected",
+        "data-muted:*:opacity-50",
         "last:border-0",
         className,
       )}

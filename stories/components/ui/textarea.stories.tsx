@@ -53,3 +53,23 @@ export const Clicked: Story = {
     ring.remove();
   },
 };
+
+/** `sm`, `md` (the default) and `lg`, in step with `Input`'s sizes. */
+export const Sizes: Story = {
+  render: (args) => (
+    <div className="flex w-80 flex-col gap-2">
+      {(["sm", "md", "lg"] as const).map((size) => (
+        <Textarea key={size} {...args} size={size} aria-label={`Size ${size}`} />
+      ))}
+    </div>
+  ),
+};
+
+/** `readOnly`: no field fill, secondary ink, and no focus border. */
+export const ReadOnly: Story = {
+  args: {
+    readOnly: true,
+    "aria-label": "Webhook payload",
+    defaultValue: "The event body Atlas sent, kept for reference.",
+  },
+};

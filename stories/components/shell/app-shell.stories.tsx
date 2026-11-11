@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { FolderIcon, PlusIcon, XIcon } from "lucide-react";
+import { BellIcon, FolderIcon, PlusIcon, XIcon } from "lucide-react";
 import { useState } from "react";
-import { screen, userEvent } from "storybook/test";
+import { expect, screen, userEvent, waitFor } from "storybook/test";
 import { PersonAvatar } from "../../../src/components/patterns/person-avatar.tsx";
 import { PageHeader } from "../../../src/components/patterns/section-header.tsx";
 import {
@@ -132,6 +132,7 @@ function Demo({ rows, docked = false, pathname = "/sessions", collapsed = false 
         onCollapsedChange={setRailCollapsed}
         dockMode={dockMode}
         onDockModeChange={setDockMode}
+        topBarActions={<IconButton icon={BellIcon} label="Notifications" size="sm" />}
         header={({ collapsed }) => (
           <OrgSwitcher
             org={ORGS[0]!}
@@ -225,4 +226,27 @@ export const CommandOpen: Story = {
   },
   tags: ["!autodocs"],
 };
+/** Below lg: the top bar, with `topBarActions` at its end, opens the rail as a drawer. */
 export const Phone: Story = { globals: { viewport: { value: "phone" } } };
+
+/**
+ * The drawer's scrim is always mounted and fades with the rail; Escape
+ * closes the drawer, and so does a link inside it, but nothing else in the
+ * rail does.
+ */
+export const PhoneDrawer: Story = {
+  globals: { viewport: { value: "phone" } },
+  play: async ({ canvasElement }) => {
+    const scrim = canvasElement.ownerDocument.querySelector<HTMLElement>(
+      'button[aria-label="Close navigation"]',
+    )!;
+    await expect(scrim).toHaveAttribute("aria-hidden", "true");
+    // A programmatic click: the button is `lg:hidden`, and the run's viewport may be wide.
+    canvasElement.ownerDocument
+      .querySelector<HTMLElement>('button[aria-label="Open navigation"]')!
+      .click();
+    await waitFor(() => expect(scrim).not.toHaveAttribute("aria-hidden"));
+    await userEvent.keyboard("{Escape}");
+    await waitFor(() => expect(scrim).toHaveAttribute("aria-hidden", "true"));
+  },
+};

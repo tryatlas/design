@@ -9,7 +9,7 @@ const PHOTO =
     `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><rect width="40" height="40" fill="#6b7a8f"/><circle cx="20" cy="16" r="7" fill="#d9c7b0"/><rect x="8" y="26" width="24" height="14" rx="7" fill="#d9c7b0"/></svg>`,
   );
 
-const SIZES = ["xs", "sm", "md", "lg"] as const;
+const SIZES = ["2xs", "xs", "sm", "md", "lg", "xl", "2xl"] as const;
 
 const meta = {
   title: "Patterns/PersonAvatar",
@@ -45,4 +45,21 @@ export const Sizes: Story = {
 };
 export const LongText: Story = {
   args: { name: "Maximiliana Wolfeschlegelsteinhausenberger-Okonkwo" },
+};
+
+/** `image={null}`: no photo, so initials. */
+export const NullImage: Story = { args: { image: null } };
+
+/** `art`: a guest's generated art in place of the initials. */
+export const GuestArt: Story = {
+  args: {
+    name: "Guest",
+    size: "xl",
+    art: (
+      <span
+        aria-hidden="true"
+        className="bg-linear-to-br from-hue-purple via-hue-blue to-hue-cyan"
+      />
+    ),
+  },
 };

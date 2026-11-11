@@ -1,4 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import { expect, userEvent } from "storybook/test";
+import { contrastExempt } from "../../lib/a11y.ts";
 import { useState } from "react";
 import { Bell, CreditCard, KeyRound, Palette, Shield, Users } from "lucide-react";
 import {
@@ -100,3 +102,39 @@ export const LongText: Story = { args: { longText: true } };
 export const ManyItems: Story = { args: { many: true } };
 /** At a phone's width the control drops under its label rather than crushing it. */
 export const Narrow: Story = { args: { narrow: true } };
+
+/**
+ * `SettingRow disabled` with a `disabledReason`: the words at 50%, the
+ * control inert at 50% (once each, never 25%), and the reason in a hint on
+ * the control, which keeps one tab stop for it.
+ */
+export const DisabledRow: Story = {
+  render: () => (
+    <div className="w-120">
+      <SettingCard>
+        <SettingRow
+          label="Email me a daily summary"
+          description="One message at 9am with what your agents did."
+          control={<LiveSwitch initial={false} disabled={false} label="Daily summary" />}
+        />
+        <SettingRow
+          label="Include sessions shared with me"
+          description="Adds your teammates' shared sessions to the summary."
+          disabled
+          disabledReason="Turn on the daily summary first"
+          control={<LiveSwitch initial disabled={false} label="Include shared sessions" />}
+        />
+      </SettingCard>
+    </div>
+  ),
+  parameters: contrastExempt("disabled"),
+  play: async ({ canvasElement }) => {
+    const row = canvasElement.querySelector<HTMLElement>(
+      '[data-slot="setting-row"][data-disabled]',
+    )!;
+    await expect(row.querySelector("[inert]")).not.toBeNull();
+    await userEvent.tab();
+    await userEvent.tab();
+    await expect(row.contains(document.activeElement)).toBe(true);
+  },
+};

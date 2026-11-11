@@ -99,10 +99,7 @@ function StatGrid({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="stat-grid"
-      className={cn(
-        "grid gap-px overflow-hidden rounded-lg border border-element-selected bg-element-selected",
-        className,
-      )}
+      className={cn("grid gap-px overflow-hidden surface-card bg-element-selected", className)}
       {...props}
     />
   );

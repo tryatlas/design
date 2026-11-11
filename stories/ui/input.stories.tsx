@@ -69,3 +69,21 @@ export const WithIcon: Story = {
     </div>
   ),
 };
+
+/** `variant="code"`: a one-time code, centred, monospaced and spaced, at 16px. */
+export const Code: Story = {
+  args: { variant: "code", size: "lg", defaultValue: "K7Q-2XM", "aria-label": "Device code" },
+  render: (args) => (
+    <div className="w-48">
+      <Input {...args} />
+    </div>
+  ),
+};
+
+/**
+ * `readOnly`: a value to read and copy, not edit. No field fill, secondary
+ * ink, and the border stays put on focus.
+ */
+export const ReadOnly: Story = {
+  args: { readOnly: true, defaultValue: "acme-labs", "aria-label": "URL slug" },
+};

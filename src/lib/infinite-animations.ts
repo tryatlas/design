@@ -20,6 +20,10 @@
  *    Unset, it runs every frame. One declaration caps them all:
  *
  *      html.platform-linux { --infinite-animation-fps: 12; }
+ *
+ * A `css` row whose `source` is a stylesheet is a utility, not a component:
+ * any element that carries the class runs it, so `components` is empty and
+ * the selector is the class itself.
  */
 
 export const INFINITE_ANIMATION_FPS_VAR = "--infinite-animation-fps";
@@ -121,6 +125,35 @@ export const INFINITE_ANIMATIONS: readonly InfiniteAnimation[] = [
     source: "src/components/blocks/globe.tsx",
     driver: "css",
     selector: '[data-slot="globe-live-dot"]',
+    duration: 2,
+    steps: 24,
+  },
+  {
+    // Also the `stream-caret` utility, wherever an app puts it.
+    id: "stream-caret",
+    components: ["StreamingMarkdown"],
+    source: "src/components/session/streaming-markdown.tsx",
+    driver: "css",
+    selector: ".stream-caret",
+    duration: 1,
+    steps: 12,
+  },
+  {
+    // Already stepped at 30 a sweep (about 14 fps); the cap lowers it to 12.
+    id: "thinking-shimmer",
+    components: [],
+    source: "src/styles/utilities.css",
+    driver: "css",
+    selector: ".thinking-shimmer",
+    duration: 2.2,
+    steps: 26,
+  },
+  {
+    id: "pulse-ring",
+    components: [],
+    source: "src/styles/utilities.css",
+    driver: "css",
+    selector: '[class*="animate-pulse-ring"]',
     duration: 2,
     steps: 24,
   },

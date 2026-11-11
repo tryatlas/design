@@ -25,6 +25,18 @@ describe("the link underline rule", () => {
     }
   });
 
+  it("variant inline keeps its underline at rest, for a link the app sets in a sentence", () => {
+    const cls = classes(linkVariants({ variant: "inline" }));
+    expect(cls).toContain("underline");
+    expect(cls).not.toContain("no-underline");
+    render(
+      <TextLink href="/docs" variant="inline">
+        the docs
+      </TextLink>,
+    );
+    expect(classes(screen.getByRole("link").className)).toContain("underline");
+  });
+
   it("a link in prose keeps its underline at rest", () => {
     const css = readFileSync(path.join(import.meta.dirname, "../../styles/session.css"), "utf8");
     const rest = css.slice(css.indexOf(".prose-session a {"));

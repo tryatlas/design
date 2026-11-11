@@ -24,15 +24,30 @@ describe("DialogContent size and blur", () => {
   it("leaves the default dialog unsized and its scrim clear", () => {
     const { popup, scrim } = open({});
     expect(popup.hasAttribute("data-size")).toBe(false);
-    expect(popup.className).toContain("max-w-[min(32rem,calc(100vw-2rem))]");
+    expect(popup.className).toContain("max-w-[min(32rem,calc(var(--app-vw,100vw)-2rem))]");
     expect(scrim.className).not.toContain("backdrop-blur");
   });
 
   it("widens to 44rem at lg, replacing the default width", () => {
     const { popup } = open({ size: "lg" });
     expect(popup.dataset.size).toBe("lg");
-    expect(popup.className).toContain("max-w-[min(44rem,calc(100vw-2rem))]");
+    expect(popup.className).toContain("max-w-[min(44rem,calc(var(--app-vw,100vw)-2rem))]");
     expect(popup.className).not.toContain("max-w-[min(32rem");
+  });
+
+  it("narrows to 24rem at sm, replacing the default width", () => {
+    const { popup } = open({ size: "sm" });
+    expect(popup.dataset.size).toBe("sm");
+    expect(popup.className).toContain("max-w-[min(24rem,calc(var(--app-vw,100vw)-2rem))]");
+    expect(popup.className).not.toContain("max-w-[min(32rem");
+  });
+
+  it("drops the entrance and exit, scrim included, when instant", () => {
+    const { popup, scrim } = open({ instant: true });
+    for (const el of [popup, scrim]) {
+      expect(el.className).toContain("animate-none");
+      expect(el.className).not.toMatch(/animate-(?:scale|fade)-(?:in|out)/);
+    }
   });
 
   it("does not size a media dialog", () => {

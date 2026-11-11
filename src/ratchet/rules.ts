@@ -46,6 +46,21 @@ export const TRANSITION_ALL_RULE: RatchetRule = {
 };
 
 /**
+ * An in-content card is `surface-card` (`rounded-lg`, an `element-selected`
+ * hairline, `bg-card`), the material `Panel`, `StatGrid`, `DataTable`,
+ * `SettingCard` and `KpiStrip` share. A ring for its edge, or the dialog
+ * step's radius on the card fill, is a second card material on the same
+ * page. Not in `RULES` or `strictRules`, so a consumer opts in once its own
+ * cards are swept: `rules: [...strictRules, SURFACE_CARD_RULE]`. A glass fill
+ * (`bg-card/95`) is a popover's, and passes.
+ */
+export const SURFACE_CARD_RULE: RatchetRule = {
+  id: "surface-card",
+  instead: "an in-content card is `surface-card`; an edge is a border role (border-border-subtle).",
+  pattern: /\bring-element-selected\b|\brounded-xl bg-card(?![\w/-])/g,
+};
+
+/**
  * Words a `color-mix()` may hold that are not colours: `in`, the colour spaces,
  * the hue interpolation keywords, and the two keywords that name no colour of
  * their own. Any other bare word in its arguments is a named colour (`white`,

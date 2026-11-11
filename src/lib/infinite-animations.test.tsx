@@ -8,6 +8,7 @@ import { planSession } from "../../stories/components/session/fixtures.ts";
 import { CheckpointTrace } from "../components/blocks/checkpoint-trace.tsx";
 import { Globe } from "../components/blocks/globe.tsx";
 import { SessionPipeline } from "../components/session/session-pipeline.tsx";
+import { StreamingMarkdown } from "../components/session/streaming-markdown.tsx";
 import { ThemeProvider } from "./theme.tsx";
 import { Skeleton } from "../components/ui/skeleton.tsx";
 import { Spinner } from "../components/ui/spinner.tsx";
@@ -30,7 +31,10 @@ const ROOT = path.join(import.meta.dirname, "../..");
 
 /** What starts an animation that never ends. */
 const ENDLESS =
-  /\banimate-(?:spin|pulse|ping|bounce)\b|repeat:\s*Infinity|requestAnimationFrame\(tick\)/;
+  /\banimate-(?:spin|pulse|ping|bounce)\b|\bstream-caret\b|repeat:\s*Infinity|requestAnimationFrame\(tick\)/;
+
+/** A row that is a utility in a stylesheet rather than a component's. */
+const isUtility = (a: (typeof INFINITE_ANIMATIONS)[number]) => a.source.endsWith(".css");
 
 function sources(dir: string): string[] {
   return readdirSync(path.join(ROOT, dir), { withFileTypes: true }).flatMap((entry) => {
@@ -61,9 +65,25 @@ describe("INFINITE_ANIMATIONS", () => {
         file !== "src/lib/infinite-animations.ts" &&
         ENDLESS.test(readFileSync(path.join(ROOT, file), "utf8")),
     );
-    const listed = new Set(INFINITE_ANIMATIONS.map((a) => a.source));
+    const listed = new Set(INFINITE_ANIMATIONS.filter((a) => !isUtility(a)).map((a) => a.source));
     expect(running.filter((file) => !listed.has(file))).toEqual([]);
     expect([...listed].filter((file) => !running.includes(file))).toEqual([]);
+  });
+
+  it("finds each utility's endless animation in its stylesheet", () => {
+    for (const animation of INFINITE_ANIMATIONS.filter(isUtility)) {
+      if (animation.driver !== "css") throw new Error(`${animation.id}: a utility is css`);
+      expect(animation.components, animation.id).toEqual([]);
+      const css = readFileSync(path.join(ROOT, animation.source), "utf8");
+      const name = animation.selector.match(/[a-z]+(?:-[a-z]+)+/)![0];
+      const utility = name.replace(/^animate-/, "");
+      // The `@utility` itself, or the `--animate-*` token that defines it.
+      const definition = css.match(
+        new RegExp(`(?:@utility ${utility} \\{[^}]*|--animate-${utility}:[^;]*)`),
+      );
+      expect(definition?.[0], animation.id).toMatch(/infinite/);
+      expect(Math.round(animation.steps / animation.duration), animation.id).toBe(12);
+    }
   });
 
   it("caps every js loop through the variable", () => {
@@ -81,6 +101,7 @@ describe("INFINITE_ANIMATIONS", () => {
         <IconButton icon={RefreshCw} label="Refresh" loading />
         <Skeleton />
         <SessionPipeline session={planSession()} />
+        <StreamingMarkdown source="hi" streaming />
         <ThemeProvider>
           <Globe />
         </ThemeProvider>
@@ -99,10 +120,13 @@ describe("INFINITE_ANIMATIONS", () => {
       </div>,
     );
     for (const animation of INFINITE_ANIMATIONS) {
-      if (animation.driver !== "css" || animation.id === "toast-loading") continue;
+      if (animation.driver !== "css" || animation.id === "toast-loading" || isUtility(animation))
+        continue;
       const found = container.querySelector(animation.selector);
       expect(found, `${animation.id}: ${animation.selector}`).not.toBeNull();
-      expect(found!.getAttribute("class"), animation.id).toMatch(/animate-(?:spin|pulse|ping)/);
+      expect(found!.getAttribute("class"), animation.id).toMatch(
+        /animate-(?:spin|pulse|ping)|stream-caret/,
+      );
       expect(animation.steps / animation.duration, animation.id).toBe(12);
     }
   });

@@ -106,7 +106,7 @@ const MarkdownBlock = memo(function MarkdownBlock({
 });
 
 function Caret() {
-  return <span data-slot="stream-caret" className="session-caret" aria-hidden />;
+  return <span data-slot="stream-caret" className="stream-caret" aria-hidden />;
 }
 
 /** A fence still streaming: its body as plain code, the language class kept. */

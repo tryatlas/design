@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 import {
   BellGlyph,
+  CheckGlyph,
   CopyGlyph,
   MenuGlyph,
   PlusMinusGlyph,
@@ -86,6 +87,27 @@ export const OneShots: Story = {
         >
           <BellGlyph ringing={ringing} onAnimationEnd={() => setRinging(false)} />
           Ring
+        </button>
+      </div>
+    );
+  },
+};
+
+/** `CheckGlyph`: draws itself on as it mounts, for a completion the user waited for. */
+export const Check: Story = {
+  render: () => {
+    const [run, setRun] = useState(0);
+    return (
+      <div className="flex items-center gap-3">
+        <span className="text-success">
+          <CheckGlyph key={run} size="xl" />
+        </span>
+        <button
+          type="button"
+          className="label rounded border border-border px-3 py-1.5 hover:bg-element-hover"
+          onClick={() => setRun((n) => n + 1)}
+        >
+          Draw again
         </button>
       </div>
     );

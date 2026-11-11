@@ -26,11 +26,19 @@ import { NAV, SESSIONS, StoryLinks } from "../shell/fixtures.tsx";
 
 type Row = (typeof SESSIONS)[number];
 
-function Dock({ row, onClose }: { row: Row; onClose: () => void }) {
+function Dock({
+  row,
+  onClose,
+  instant = false,
+}: {
+  row: Row;
+  onClose: () => void;
+  instant?: boolean;
+}) {
   const { mode } = useSideDock();
   const { expand, restore } = useSideDockRoom();
   return (
-    <SideDock>
+    <SideDock instant={instant}>
       <div className="flex h-10 shrink-0 items-center gap-2 border-b border-border-subtle px-3">
         <span className="code text-muted-foreground">{row.ref}</span>
         <span className="flex-1" />
@@ -62,6 +70,8 @@ interface DemoProps {
   topBar?: boolean;
   empty?: boolean;
   inset?: AppFrameInset;
+  /** Open and close the dock with no slide and no fade. */
+  instant?: boolean;
 }
 
 /** A macOS-style title row: what `inset="sides"` keeps at the window's top. */
@@ -90,6 +100,7 @@ function Demo({
   topBar = false,
   empty = false,
   inset = "all",
+  instant = false,
 }: DemoProps) {
   const sides = inset === "sides";
   // The app's state: the frame reports a pick and keeps nothing.
@@ -157,7 +168,7 @@ function Demo({
             </div>
           )}
         </div>
-        {row && <Dock row={row} onClose={() => setSelected(null)} />}
+        {row && <Dock row={row} onClose={() => setSelected(null)} instant={instant} />}
       </AppFrame>
     </StoryLinks>
   );
@@ -224,3 +235,10 @@ export const Phone: Story = {
   args: { topBar: true },
   globals: { viewport: { value: "phone" } },
 };
+
+/**
+ * `SideDock instant`: the dock opens and closes in one frame, for a dock
+ * toggled from the keyboard (⌘J), where a slide on every press reads as
+ * latency. Pick a row, then close it.
+ */
+export const InstantDock: Story = { args: { docked: true, instant: true } };

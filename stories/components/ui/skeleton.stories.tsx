@@ -82,3 +82,20 @@ export const Card: Story = {
     </div>
   ),
 };
+
+/** `inline`: a `span`, for a value still loading inside a line of text. */
+export const Inline: Story = {
+  render: () => (
+    <p className="text-sm text-secondary-foreground">
+      <Skeleton inline className="h-3 w-8" /> sessions this week, across{" "}
+      <Skeleton inline className="h-3 w-6" /> projects.
+    </p>
+  ),
+  play: async ({ canvasElement }) => {
+    const placeholders = canvasElement.querySelectorAll('[data-slot="skeleton"]');
+    await expect([...placeholders].map((el) => el.tagName)).toEqual(["SPAN", "SPAN"]);
+  },
+};
+
+/** `radius="xl"`: stands in for something on the dialog step, a whole panel or a sheet. */
+export const RadiusXl: Story = { args: { radius: "xl", className: "h-24 w-64" } };

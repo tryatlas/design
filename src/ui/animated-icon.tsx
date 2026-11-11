@@ -114,6 +114,26 @@ export function CopyGlyph({ copied, size = "md", className }: GlyphProps & { cop
 }
 
 /**
+ * A check that draws itself on as it mounts: a completion the user waited
+ * for ("You're in", a device paired), where a glyph that simply appears
+ * says less than one that is written. The draw is 220ms; under reduced
+ * motion it still draws, since the draw is the state change, not an
+ * embellishment. Remount it (a `key`) to draw it again.
+ */
+export function CheckGlyph({ size = "md", className }: GlyphProps) {
+  return (
+    <svg {...svgProps(size)} className={cn("shrink-0", className)}>
+      <path
+        d="M20 6 9 17l-5-5"
+        pathLength={1}
+        strokeDasharray={1}
+        className="animate-icon-check-draw"
+      />
+    </svg>
+  );
+}
+
+/**
  * Trash whose lid tips off to the right. `armed` is for a destructive control
  * that confirms in place — the lid opening is the "are you sure" beat. On a
  * plain delete button, drive it from hover instead and the lid lifts as the

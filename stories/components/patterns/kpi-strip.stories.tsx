@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import { expect } from "storybook/test";
 import { DeltaChip, type KpiCell, KpiStrip } from "../../../src/components/patterns/kpi-strip.tsx";
 
 const spark = (seed: number) =>
@@ -116,5 +117,39 @@ export const WithTones: Story = {
         detail: "Neither good nor bad",
       },
     ],
+  },
+};
+
+/**
+ * In a narrow strip (a phone, a dock) the figures run two a row, and the
+ * hairlines between them survive the wrap; four a row from 36rem.
+ */
+export const Phone: Story = {
+  render: (args) => (
+    <div className="w-80">
+      <KpiStrip {...args} />
+    </div>
+  ),
+};
+
+/** Three figures: one row when wide; on a phone the odd one out takes the full row. */
+export const ThreeCells: Story = {
+  args: { cells: CELLS.slice(0, 3) },
+  render: (args) => (
+    <div className="flex flex-col gap-4">
+      <KpiStrip {...args} />
+      <div className="w-80">
+        <KpiStrip {...args} />
+      </div>
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const [wide, narrow] = canvasElement.querySelectorAll<HTMLElement>('[data-slot="kpi-strip"]');
+    const cols = (strip: HTMLElement) =>
+      getComputedStyle(strip.firstElementChild!).gridTemplateColumns.split(" ").length;
+    await expect(cols(wide!)).toBe(3);
+    await expect(cols(narrow!)).toBe(2);
+    const last = narrow!.firstElementChild!.lastElementChild!;
+    await expect(getComputedStyle(last).gridColumnEnd).toBe("span 2");
   },
 };

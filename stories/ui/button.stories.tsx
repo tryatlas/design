@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { ArrowRight, Loader2, Plus, Trash2 } from "lucide-react";
-import { expect, userEvent, within } from "storybook/test";
+import { ArrowDown, ArrowRight, Phone, Plus, Trash2 } from "lucide-react";
+import { expect, fn, userEvent, within } from "storybook/test";
 import { Button } from "../../src/ui/button.tsx";
 import { Icon } from "../../src/ui/icon.tsx";
 import { Kbd, KbdKeys } from "../../src/ui/kbd.tsx";
@@ -15,6 +15,8 @@ const VARIANTS = [
   "destructive",
   "destructive-outline",
   "warning-outline",
+  "success",
+  "success-subtle",
 ] as const;
 const SIZES = ["xs", "sm", "md", "lg"] as const;
 
@@ -89,14 +91,77 @@ export const Disabled: Story = {
   ),
 };
 
-/** Buttons carry no loading prop: a spinner glyph and `disabled` are the pattern. */
+/**
+ * `loading`: a spinner over the label, which stays (hidden) so the button
+ * keeps its width. `aria-busy`, and a press does nothing, but it is not
+ * dimmed: busy, not unavailable.
+ */
 export const Loading: Story = {
-  args: { disabled: true },
+  args: { loading: true, children: "Save changes", onClick: fn() },
   render: (args) => (
-    <Button {...args}>
-      <Icon icon={Loader2} size="sm" className="animate-spin" />
-      Saving…
-    </Button>
+    <div className="flex flex-wrap items-center gap-2">
+      {(["default", "secondary", "outline", "destructive"] as const).map((variant) => (
+        <Button key={variant} {...args} variant={variant} />
+      ))}
+    </div>
+  ),
+  play: async ({ canvasElement, args }) => {
+    const [button] = within(canvasElement).getAllByRole("button");
+    await expect(button).toHaveAttribute("aria-busy", "true");
+    await expect(getComputedStyle(button).opacity).toBe("1");
+    await userEvent.click(button);
+    await expect(args.onClick).not.toHaveBeenCalled();
+  },
+};
+
+/** The two success fills: a positive commit that is not the page's primary (join, accept). */
+export const Success: Story = {
+  render: (args) => (
+    <div className="flex flex-wrap items-center gap-2">
+      <Button {...args} variant="success">
+        <Icon icon={Phone} size="sm" />
+        Join call
+      </Button>
+      <Button {...args} variant="success-subtle">
+        Accept
+      </Button>
+    </div>
+  ),
+};
+
+/** `shape="pill"`: round ends, for a button standing alone in a bar or floating over content. */
+export const Pill: Story = {
+  args: { shape: "pill" },
+  render: (args) => (
+    <div className="flex flex-wrap items-center gap-2">
+      <Button {...args}>Continue</Button>
+      <Button {...args} variant="secondary">
+        Skip
+      </Button>
+      <Button {...args} variant="success">
+        Join
+      </Button>
+    </div>
+  ),
+};
+
+/** `elevated`: the menu shadow, for a control floating over scrolling content. */
+export const Elevated: Story = {
+  args: { elevated: true, shape: "pill", variant: "secondary", size: "sm" },
+  render: (args) => (
+    <div className="relative h-40 w-80 overflow-hidden rounded-lg border border-border">
+      <div className="flex flex-col gap-2 p-3">
+        {Array.from({ length: 6 }, (_, i) => (
+          <p key={i} className="text-sm text-muted-foreground">
+            A message further up the thread, line {i + 1}
+          </p>
+        ))}
+      </div>
+      <Button {...args} className="absolute bottom-3 left-1/2 -translate-x-1/2">
+        <Icon icon={ArrowDown} size="sm" />
+        New messages
+      </Button>
+    </div>
   ),
 };
 

@@ -1,6 +1,18 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { Filter, Minus, MoreHorizontal, Plus, RefreshCw, Settings, Trash2, X } from "lucide-react";
-import { expect, within } from "storybook/test";
+import {
+  Filter,
+  MicOff,
+  Minus,
+  PhoneOff,
+  Video,
+  MoreHorizontal,
+  Plus,
+  RefreshCw,
+  Settings,
+  Trash2,
+  X,
+} from "lucide-react";
+import { expect, userEvent, waitFor, within } from "storybook/test";
 import { RailGlyph } from "../../src/ui/animated-icon.tsx";
 import { IconButton } from "../../src/ui/icon-button.tsx";
 import { Icon } from "../../src/ui/icon.tsx";
@@ -15,8 +27,10 @@ const VARIANTS = [
   "destructive",
   "ghost-destructive",
   "floating",
+  "alert",
+  "glass",
 ] as const;
-const SIZES = ["2xs", "xs", "sm", "md", "lg"] as const;
+const SIZES = ["2xs", "xs", "sm", "md", "lg", "xl"] as const;
 
 const meta = {
   title: "Primitives/IconButton",
@@ -213,5 +227,71 @@ export const Loading: Story = {
     const idle = canvas.getByRole("button", { name: "Refresh models, idle" });
     await expect(idle).not.toHaveAttribute("aria-busy");
     await expect(idle.querySelector(".animate-spin")).toBeNull();
+  },
+};
+
+/** `variant="alert"`: a control that is on and says so (a muted microphone in a call). */
+export const Alert: Story = {
+  args: { icon: MicOff, label: "Unmute", variant: "alert", size: "xl", shape: "round" },
+};
+
+/**
+ * `size="xl"` and `variant="glass"`: the call dock's 48px controls, floating
+ * over the page in the one floating material (`glass-bar`).
+ */
+export const Glass: Story = {
+  args: { variant: "glass", size: "xl" },
+  render: (args) => (
+    <div className="relative h-40 w-96 overflow-hidden rounded-lg border border-border">
+      <div className="flex flex-col gap-2 p-3">
+        {Array.from({ length: 6 }, (_, i) => (
+          <p key={i} className="text-sm text-muted-foreground">
+            Someone is sharing their screen, row {i + 1}
+          </p>
+        ))}
+      </div>
+      <div className="absolute bottom-3 left-1/2 flex -translate-x-1/2 gap-2">
+        <IconButton {...args} icon={MicOff} label="Unmute" variant="alert" />
+        <IconButton {...args} icon={Video} label="Turn camera off" />
+        <IconButton {...args} icon={PhoneOff} label="Leave call" />
+      </div>
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const button = within(canvasElement).getByRole("button", { name: "Leave call" });
+    const style = getComputedStyle(button);
+    await expect(style.backdropFilter).toContain("blur");
+    await expect(style.width).toBe("48px");
+  },
+};
+
+/**
+ * `reveal`: a row affordance that waits for its row (the nearest `group`).
+ * Hidden by opacity, so it stays in the tab order: Tab reaches it, and it
+ * shows while focused. Always shown on a touch screen.
+ */
+export const Reveal: Story = {
+  args: { icon: MoreHorizontal, label: "More actions", reveal: true, size: "sm" },
+  render: (args) => (
+    <ul className="flex w-72 flex-col">
+      {["Design review", "Launch notes", "Weekly sync"].map((title) => (
+        <li
+          key={title}
+          className="group flex items-center justify-between rounded-md px-2 py-1 hover:bg-element-hover"
+        >
+          <span className="text-sm text-foreground">{title}</span>
+          <IconButton {...args} label={`More actions for ${title}`} />
+        </li>
+      ))}
+    </ul>
+  ),
+  play: async ({ canvasElement }) => {
+    const button = within(canvasElement).getByRole("button", {
+      name: "More actions for Design review",
+    });
+    await expect(getComputedStyle(button).opacity).toBe("0");
+    await userEvent.tab();
+    await expect(button).toHaveFocus();
+    await waitFor(() => expect(getComputedStyle(button).opacity).toBe("1"));
   },
 };

@@ -225,7 +225,7 @@ const PRINCIPLES: Principle[] = [
     title: "Animate by how often it's seen",
     pages: ["Motion"],
     rule: "What people do many times a day doesn't move. What they see now and then gets a short ease-out, under 300ms. Nothing appears from nothing.",
-    why: "An animation on a frequent action stops reading as motion and starts reading as latency. The command palette and every keyboard-initiated action open instantly. Menus, popovers and dialogs scale in from 0.95 with opacity over 150ms, because something that grows out of scale(0) looks like it came from nowhere.",
+    why: "An animation on a frequent action stops reading as motion and starts reading as latency. The command palette and every keyboard-initiated action open instantly. Menus, popovers and dialogs scale in from 0.95 with opacity over 150ms, because something that grows out of scale(0) looks like it came from nowhere. When a shortcut opens a dialog, popover or sheet, pass `instant` and it skips its entrance and exit.",
     good: <PaletteDemo instant />,
     bad: <PaletteDemo />,
     roles: [

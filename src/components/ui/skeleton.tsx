@@ -1,11 +1,12 @@
 import { cn } from "../../lib/utils.ts";
 
-type SkeletonRadius = "sm" | "md" | "lg" | "full";
+type SkeletonRadius = "sm" | "md" | "lg" | "xl" | "full";
 
 const RADIUS: Record<SkeletonRadius, string> = {
   sm: "rounded-sm",
   md: "rounded-md",
   lg: "rounded-lg",
+  xl: "rounded-xl",
   full: "rounded-full",
 };
 
@@ -25,20 +26,39 @@ const RADIUS: Record<SkeletonRadius, string> = {
  * Filled with `muted`, the same grey as a progress track: the translucent
  * `element-*` fills are hover and selection washes, and over a black ground
  * they all but vanish.
+ *
+ * `inline` renders a `span` (an `inline-block`), for a placeholder inside a
+ * line of text or inside an element that may only hold phrasing content (a
+ * `<p>`, a `<button>`): a count still loading, a name not yet known.
+ * Every loading placeholder in an app is this; a shimmer of its own is a
+ * second treatment for the same meaning.
  */
 function Skeleton({
   className,
   animated = true,
   radius = "sm",
+  inline = false,
   ...props
-}: React.ComponentProps<"div"> & { animated?: boolean; radius?: SkeletonRadius }) {
-  return (
-    <div
-      data-slot="skeleton"
-      data-static={animated ? undefined : ""}
-      className={cn(animated && "animate-pulse", RADIUS[radius], "bg-muted", className)}
-      {...props}
-    />
+}: React.ComponentProps<"div"> & {
+  animated?: boolean;
+  radius?: SkeletonRadius;
+  inline?: boolean;
+}) {
+  const shared = {
+    "data-slot": "skeleton",
+    "data-static": animated ? undefined : "",
+    className: cn(
+      inline && "inline-block align-middle",
+      animated && "animate-pulse",
+      RADIUS[radius],
+      "bg-muted",
+      className,
+    ),
+  };
+  return inline ? (
+    <span {...(props as React.ComponentProps<"span">)} {...shared} />
+  ) : (
+    <div {...props} {...shared} />
   );
 }
 

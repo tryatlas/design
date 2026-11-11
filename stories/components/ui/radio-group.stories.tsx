@@ -1,6 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Label } from "../../../src/components/ui/label.tsx";
-import { RadioGroup, RadioGroupItem } from "../../../src/components/ui/radio-group.tsx";
+import { RadioCard, RadioGroup, RadioGroupItem } from "../../../src/components/ui/radio-group.tsx";
+import { expect, userEvent, within } from "storybook/test";
+import { contrastExempt } from "../../lib/a11y.ts";
 
 const OPTIONS = [
   { value: "read", label: "Read-only" },
@@ -69,4 +71,42 @@ export const ManyItems: Story = {
       (label) => ({ value: label, label }),
     ),
   },
+};
+
+const PLANS = [
+  { value: "auto", title: "Automatic", description: "Atlas picks the model for each turn." },
+  { value: "fast", title: "Fast", description: "The quickest model, for short questions." },
+  { value: "deep", title: "Deep", description: "The strongest model, for long refactors." },
+];
+
+/**
+ * `RadioCard`: an option that needs a sentence. The whole card is the radio,
+ * so the arrow keys move between cards.
+ */
+export const RadioCards: Story = {
+  render: () => (
+    <RadioGroup defaultValue="auto" aria-label="Model" className="w-96">
+      {PLANS.map((p) => (
+        <RadioCard key={p.value} value={p.value} title={p.title} description={p.description} />
+      ))}
+    </RadioGroup>
+  ),
+  play: async ({ canvasElement }) => {
+    const radios = within(canvasElement).getAllByRole("radio");
+    await userEvent.click(radios[0]!);
+    await userEvent.keyboard("{ArrowDown}");
+    await expect(radios[1]).toHaveAttribute("aria-checked", "true");
+  },
+};
+
+/** `density="compact"`: cards 4px apart, for a stack inside a dialog. */
+export const Compact: Story = {
+  render: () => (
+    <RadioGroup defaultValue="read" density="compact" aria-label="Role" className="w-80">
+      <RadioCard value="read" title="Viewer" description="Sees shared sessions." />
+      <RadioCard value="write" title="Member" description="Runs agents and shares sessions." />
+      <RadioCard value="admin" title="Admin" description="Manages members and billing." disabled />
+    </RadioGroup>
+  ),
+  parameters: contrastExempt("disabled"),
 };

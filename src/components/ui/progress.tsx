@@ -45,7 +45,7 @@ function ProgressTrack({ className, ...props }: ProgressPrimitive.Track.Props) {
   return (
     <ProgressPrimitive.Track
       className={cn(
-        "relative flex h-1 w-full items-center overflow-x-hidden rounded-md bg-muted",
+        "relative flex h-1 w-full items-center overflow-hidden rounded-md bg-muted",
         className,
       )}
       data-slot="progress-track"
@@ -54,6 +54,14 @@ function ProgressTrack({ className, ...props }: ProgressPrimitive.Track.Props) {
   );
 }
 
+/**
+ * The fill moves by `translateX`, not `width`: a full-width bar slid left by
+ * what is still to do, on a track that clips it. A width change re-lays out
+ * the bar every frame of the ease, and a purge's bar retargets on every
+ * poll. Base UI writes the value as an inline `width`; this reads it back
+ * and writes a transform instead. Indeterminate (no value) is the bar at
+ * full width, as before. Reduced motion jumps to the new value.
+ */
 function ProgressIndicator({
   className,
   tone = "default",
@@ -64,10 +72,24 @@ function ProgressIndicator({
       data-slot="progress-indicator"
       data-tone={tone === "default" ? undefined : tone}
       className={cn(
-        "h-full bg-primary transition-[width] duration-base ease-out-strong",
+        "h-full w-full bg-primary transition-transform duration-base ease-out-strong motion-reduce:transition-none",
         TONE_CLASS[tone],
         className,
       )}
+      render={(renderProps) => {
+        const { width, ...style } = renderProps.style ?? {};
+        const percent = typeof width === "string" ? Number.parseFloat(width) : Number.NaN;
+        return (
+          <div
+            {...renderProps}
+            style={
+              Number.isFinite(percent)
+                ? { ...style, transform: `translateX(${percent - 100}%)` }
+                : renderProps.style
+            }
+          />
+        );
+      }}
       {...props}
     />
   );

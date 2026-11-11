@@ -44,3 +44,16 @@ export const StandaloneAndProse: Story = {
     </div>
   ),
 };
+
+/** `variant="inline"`: a link the app sets inside a sentence keeps its underline at rest. */
+export const Inline: Story = {
+  render: () => (
+    <p className="max-w-md text-sm text-secondary-foreground">
+      Only an admin can change which models are on.{" "}
+      <TextLink href="#" variant="inline">
+        See who your admins are
+      </TextLink>
+      .
+    </p>
+  ),
+};

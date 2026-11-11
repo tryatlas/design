@@ -130,13 +130,20 @@ function useSideDockRoom(): { expand: () => number; restore: () => void } {
  * slot. A portal rather than a prop because the frame lives in the app's
  * layout and the dock's contents are the screen's own state. Children make it
  * open; none make it close.
+ *
+ * `instant` opens and closes it with no slide and no fade: for a dock toggled
+ * from the keyboard (⌘J), where an entrance on every press reads as latency.
  */
-function SideDock({ children }: { children?: ReactNode }) {
+function SideDock({ children, instant = false }: { children?: ReactNode; instant?: boolean }) {
   const { slot } = useContext(SideDockContext);
   if (!slot) return null;
   return createPortal(
     <AnimatePresence initial={false}>
-      {children && <SideDockPanel key="dock">{children}</SideDockPanel>}
+      {children && (
+        <SideDockPanel key="dock" instant={instant}>
+          {children}
+        </SideDockPanel>
+      )}
     </AnimatePresence>,
     slot,
   );
@@ -160,7 +167,7 @@ function SideDock({ children }: { children?: ReactNode }) {
  * Reduced motion drops the slide and keeps the fade. The transform is a full
  * string rather than motion's `x`, which motion can hand to the compositor.
  */
-function SideDockPanel({ children }: { children: ReactNode }) {
+function SideDockPanel({ children, instant }: { children: ReactNode; instant: boolean }) {
   const { mode, work, inset } = useContext(SideDockContext);
   const isPresent = useIsPresent();
   const still = useReducedMotion();
@@ -175,7 +182,7 @@ function SideDockPanel({ children }: { children: ReactNode }) {
       initial={{ opacity: 0, transform: away }}
       animate={{ opacity: 1, transform: "translateX(0px)" }}
       exit={{ opacity: 0, transform: away }}
-      transition={SPRING_DOCK}
+      transition={instant ? { duration: 0 } : SPRING_DOCK}
       style={{ width }}
       className={cn(
         "z-panel flex h-full shrink-0 flex-col overflow-hidden rounded-xl border border-border bg-card max-lg:hidden",

@@ -23,6 +23,8 @@ interface DemoProps {
   description?: string;
   showCloseButton?: boolean;
   destructive?: boolean;
+  size?: "sm" | "default" | "lg";
+  instant?: boolean;
 }
 
 function Demo({
@@ -31,11 +33,13 @@ function Demo({
   description = "The name shows in the sidebar and in shared links.",
   showCloseButton = true,
   destructive = false,
+  size = "default",
+  instant = false,
 }: DemoProps) {
   return (
     <Dialog defaultOpen={defaultOpen}>
       <DialogTrigger render={<Button variant="outline" />}>Open dialog</DialogTrigger>
-      <DialogContent showCloseButton={showCloseButton}>
+      <DialogContent showCloseButton={showCloseButton} size={size} instant={instant}>
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>{description}</DialogDescription>
@@ -56,7 +60,14 @@ function Demo({
 const meta = {
   title: "Primitives/Dialog",
   component: Demo,
-  args: { defaultOpen: false, showCloseButton: true, destructive: false },
+  args: {
+    defaultOpen: false,
+    showCloseButton: true,
+    destructive: false,
+    size: "default",
+    instant: false,
+  },
+  argTypes: { size: { control: "inline-radio", options: ["sm", "default", "lg"] } },
   parameters: {
     docs: {
       description: {
@@ -180,5 +191,37 @@ export const LargeBlurred: Story = {
     await expect(Math.abs(popup.getBoundingClientRect().width - expected)).toBeLessThanOrEqual(1);
     const scrim = document.querySelector('[data-slot="dialog-overlay"]')!;
     await expect(getComputedStyle(scrim).backdropFilter).not.toBe("none");
+  },
+};
+
+/** `size="sm"`, 24rem: a confirm or a one-field prompt. */
+export const Small: Story = {
+  args: {
+    defaultOpen: true,
+    size: "sm",
+    destructive: true,
+    title: "Delete this link?",
+    description: "Anyone who has it loses access.",
+  },
+  tags: ["!autodocs"],
+  play: async () => {
+    const popup = await screen.findByRole("dialog");
+    await expect(popup.dataset.size).toBe("sm");
+  },
+};
+
+/**
+ * `instant`: no scale-in, no fade, scrim included. For a dialog opened from
+ * the keyboard (a shortcuts sheet on `?`), where an entrance on every press
+ * reads as latency.
+ */
+export const Instant: Story = {
+  args: { instant: true },
+  play: async ({ canvas, userEvent }) => {
+    await userEvent.click(canvas.getByRole("button", { name: "Open dialog" }));
+    const popup = await screen.findByRole("dialog");
+    await expect(getComputedStyle(popup).animationName).toBe("none");
+    await userEvent.keyboard("{Escape}");
+    await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
   },
 };

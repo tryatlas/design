@@ -57,7 +57,7 @@ Without a provider, links are plain `<a href>` and nothing is "active".
   "./styles-core.css": "the stylesheet with only Atlas as a :root floor, for an app that applies themes itself",
   "./blocks.css": "the stylesheet for ./blocks alone: Atlas, the utilities, and only the blocks' classes",
   "./theme": "resolveTheme, resolveBase, themeFromToml, the registry, colour utils",
-  "./ratchet": "runRatchet, defineRatchetSuite, formatViolations, RULES, strictRules, ATLAS_PREFIX_RULE, TRANSITION_ALL_RULE",
+  "./ratchet": "runRatchet, defineRatchetSuite, formatViolations, RULES, strictRules, ATLAS_PREFIX_RULE, TRANSITION_ALL_RULE, SURFACE_CARD_RULE",
   "./animations": "INFINITE_ANIMATIONS, INFINITE_ANIMATION_FPS_VAR, infiniteAnimationFps (no React, no DOM at import)",
   "./session": "the SessionView types and helpers, StreamingMarkdown, ToolCallCard, TurnRow, SessionTimeline, SessionPipeline",
   "./timeline-calendar": "TimelineCalendar, which needs @tanstack/react-virtual",
@@ -265,6 +265,9 @@ your runner's `describe` and `it`, fails with the same message (plus
 a root that moved scans nothing and would pass. `strictRules` is the next
 notch, which web holds: `rounded-[inherit]` allowed, no raised shadows
 (`shadow-sm`, `shadow-xl`…), no `[var(--…)]` arbitrary values, no `dark:`.
+`SURFACE_CARD_RULE` is opt-in on top of either: an in-content card is the
+`surface-card` utility, never a ring or `rounded-xl bg-card` of its own
+(`rules: [...strictRules, SURFACE_CARD_RULE]`).
 
 ```ts
 import { defineRatchetSuite, strictRules } from "@tryatlas/design/ratchet";

@@ -106,3 +106,17 @@ export const ManyItems: Story = {
     </AvatarGroup>
   ),
 };
+
+/** `AvatarGroupCount size="lg"`, beside `lg` avatars. */
+export const GroupLarge: Story = {
+  render: () => (
+    <AvatarGroup>
+      {PEOPLE.slice(0, 3).map((name) => (
+        <Avatar key={name} size="lg">
+          <AvatarFallback>{initials(name)}</AvatarFallback>
+        </Avatar>
+      ))}
+      <AvatarGroupCount size="lg">+2</AvatarGroupCount>
+    </AvatarGroup>
+  ),
+};

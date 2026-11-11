@@ -158,7 +158,10 @@ export function CommsComposerShell({
     >
       <div
         className={cn(
-          "relative mx-auto min-w-[min(100%,24rem)] transition-[width] duration-slow ease-out-strong motion-reduce:transition-none",
+          // The widen on focus snaps. The composer is focused a hundred times
+          // a day, and `width` is a layout property: tweening it re-laid out
+          // the thread above on every frame.
+          "relative mx-auto min-w-[min(100%,24rem)]",
           expanded && !readOnly ? "w-[89.5%]" : "w-[84%]",
         )}
       >

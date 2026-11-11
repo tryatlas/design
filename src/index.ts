@@ -47,6 +47,7 @@ export * from "./components/ui/checkbox.tsx";
 export * from "./components/ui/code-block.tsx";
 export * from "./components/ui/collapsible.tsx";
 export * from "./components/ui/combobox.tsx";
+export * from "./components/ui/copy-field.tsx";
 export * from "./components/blocks/dither-field.tsx";
 export * from "./components/ui/empty-state.tsx";
 export * from "./components/ui/field.tsx";

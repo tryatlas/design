@@ -212,7 +212,7 @@ function MessageRow({
       data-head={head || undefined}
       data-editing={editing || undefined}
       className={cn(
-        "group/msg relative flex gap-2 rounded px-1 py-px transition-colors hover:bg-element-hover data-flash:bg-warning-muted",
+        "group/msg relative flex gap-2 rounded px-1 py-px transition-colors hover:bg-element-hover data-editing:bg-element-selected data-flash:bg-warning-muted",
         head && "mt-3 first:mt-0",
         className,
       )}

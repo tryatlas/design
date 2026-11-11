@@ -23,12 +23,52 @@ function SheetPortal({ ...props }: SheetPrimitive.Portal.Props) {
   return <SheetPrimitive.Portal data-slot="sheet-portal" {...props} />;
 }
 
-function SheetOverlay({ className, ...props }: SheetPrimitive.Backdrop.Props) {
+/**
+ * A drawer comes in slowly and leaves quickly: `duration-slow` on
+ * `ease-drawer` to arrive (it travels a whole edge, and is opened on
+ * purpose), `duration-base` on `ease-out-strong` to go (the user has already
+ * moved on). The scrim keeps the same time both ways, so it fades in step
+ * with the panel. Only `translate` and `opacity` move.
+ */
+const SHEET_MOTION =
+  "duration-slow ease-drawer data-ending-style:duration-base data-ending-style:ease-out-strong";
+
+type SheetSide = "top" | "right" | "bottom" | "left";
+
+/**
+ * Where each side sits, and the edge it travels from: the whole of its own
+ * size, so it slides in from off-screen rather than popping in 2.5rem short.
+ * `motion-safe:`, so under reduced motion it only fades.
+ */
+const SIDE: Record<SheetSide, string> = {
+  right:
+    "inset-y-0 right-0 h-full w-full border-l motion-safe:data-starting-style:translate-x-full motion-safe:data-ending-style:translate-x-full",
+  left: "inset-y-0 left-0 h-full w-full border-r motion-safe:data-starting-style:-translate-x-full motion-safe:data-ending-style:-translate-x-full",
+  top: "inset-x-0 top-0 h-auto border-b motion-safe:data-starting-style:-translate-y-full motion-safe:data-ending-style:-translate-y-full",
+  bottom:
+    "inset-x-0 bottom-0 h-auto max-h-5/6 min-h-1/2 rounded-t-xl border-t motion-safe:data-starting-style:translate-y-full motion-safe:data-ending-style:translate-y-full",
+};
+
+/** A side sheet's width from `sm` up: `sm` 24rem, `md` 28rem, `lg` 42rem. */
+type SheetSize = "sm" | "md" | "lg";
+
+const SIZE: Record<SheetSize, string> = {
+  sm: "sm:max-w-sm",
+  md: "sm:max-w-md",
+  lg: "sm:max-w-2xl",
+};
+
+function SheetOverlay({
+  className,
+  instant = false,
+  ...props
+}: SheetPrimitive.Backdrop.Props & { instant?: boolean }) {
   return (
     <SheetPrimitive.Backdrop
       data-slot="sheet-overlay"
       className={cn(
-        "fixed inset-0 z-drawer scrim-soft transition-opacity duration-slow ease-drawer data-ending-style:opacity-0 data-starting-style:opacity-0",
+        "fixed inset-0 z-drawer scrim-soft transition-opacity data-ending-style:opacity-0 data-starting-style:opacity-0",
+        instant ? "duration-0" : SHEET_MOTION,
         className,
       )}
       {...props}
@@ -40,20 +80,44 @@ function SheetContent({
   className,
   children,
   side = "right",
+  size = "sm",
+  flush = false,
+  instant = false,
+  surface = "card",
   showCloseButton = true,
   ...props
 }: SheetPrimitive.Popup.Props & {
-  side?: "top" | "right" | "bottom" | "left";
+  side?: SheetSide;
+  /** The width of a `left` or `right` sheet from `sm` up; full width below. */
+  size?: SheetSize;
+  /** No padding and no gap: the content runs to the sheet's edge. */
+  flush?: boolean;
+  /** Open and close with no slide and no fade, scrim included. */
+  instant?: boolean;
+  /**
+   * The sheet's fill. `card` (the default) lifts it off the page, for a form
+   * or a detail panel; `background` is the page's own fill, for a sheet that
+   * carries a page (a reader, a session) and should read as one.
+   */
+  surface?: "card" | "background";
   showCloseButton?: boolean;
 }) {
   return (
     <SheetPortal>
-      <SheetOverlay />
+      <SheetOverlay instant={instant} />
       <SheetPrimitive.Popup
         data-slot="sheet-content"
         data-side={side}
+        data-size={side === "left" || side === "right" ? size : undefined}
+        data-surface={surface}
         className={cn(
-          "fixed z-drawer flex flex-col border-border bg-card text-xs text-foreground shadow-lg transition duration-slow ease-drawer data-ending-style:opacity-0 data-starting-style:opacity-0 data-[side=bottom]:inset-x-0 data-[side=bottom]:bottom-0 data-[side=bottom]:h-auto data-[side=bottom]:border-t data-[side=bottom]:data-ending-style:translate-y-[2.5rem] data-[side=bottom]:data-starting-style:translate-y-[2.5rem] data-[side=left]:inset-y-0 data-[side=left]:left-0 data-[side=left]:h-full data-[side=left]:w-3/4 data-[side=left]:border-r data-[side=left]:data-ending-style:translate-x-[-2.5rem] data-[side=left]:data-starting-style:translate-x-[-2.5rem] data-[side=right]:inset-y-0 data-[side=right]:right-0 data-[side=right]:h-full data-[side=right]:w-3/4 data-[side=right]:border-l data-[side=right]:data-ending-style:translate-x-[2.5rem] data-[side=right]:data-starting-style:translate-x-[2.5rem] data-[side=top]:inset-x-0 data-[side=top]:top-0 data-[side=top]:h-auto data-[side=top]:border-b data-[side=top]:data-ending-style:translate-y-[-2.5rem] data-[side=top]:data-starting-style:translate-y-[-2.5rem] data-[side=left]:sm:max-w-sm data-[side=right]:sm:max-w-sm",
+          "fixed z-drawer flex flex-col border-border text-xs text-foreground shadow-lg",
+          surface === "background" ? "bg-background" : "bg-card",
+          "transition-[translate,opacity] data-ending-style:opacity-0 data-starting-style:opacity-0",
+          instant ? "duration-0" : SHEET_MOTION,
+          SIDE[side],
+          (side === "left" || side === "right") && SIZE[size],
+          flush && "gap-0 p-0",
           className,
         )}
         {...props}
@@ -72,12 +136,28 @@ function SheetContent({
   );
 }
 
-function SheetHeader({ className, ...props }: React.ComponentProps<"div">) {
+/**
+ * `divided` rules the header off from the body below it, for a `flush`
+ * sheet whose body scrolls under a fixed header (a detail panel).
+ * `compact` tightens the bottom edge, for a header straight over a list.
+ */
+function SheetHeader({
+  className,
+  divided = false,
+  compact = false,
+  ...props
+}: React.ComponentProps<"div"> & { divided?: boolean; compact?: boolean }) {
   return (
     <div
       data-slot="sheet-header"
+      data-divided={divided || undefined}
       // `pr-10` keeps a long title clear of the close button in the corner.
-      className={cn("flex flex-col gap-1 p-4 pr-10", className)}
+      className={cn(
+        "flex shrink-0 flex-col gap-1 p-4 pr-10",
+        compact && "pb-2",
+        divided && "border-b border-border",
+        className,
+      )}
       {...props}
     />
   );
@@ -117,6 +197,7 @@ function SheetDescription({ className, ...props }: SheetPrimitive.Description.Pr
   );
 }
 
+export type { SheetSide, SheetSize };
 export {
   Sheet,
   SheetTrigger,

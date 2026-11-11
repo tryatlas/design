@@ -16,7 +16,7 @@
                     Atlas dark. Select with data-theme + data-appearance.
      utilities.css  the @theme bridge to Tailwind and the named @utility set
      syntax.css     highlight.js classes coloured from the `syntax.*` keys
-     session.css    the session blocks' prose (`.prose-session`) and caret
+     session.css    the session blocks' prose (`.prose-session`)
      canvas.css     xyflow's `--xy-*` chrome mapped onto the theme (canvas blocks)
    ========================================================================== */
 

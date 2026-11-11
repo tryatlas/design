@@ -4,6 +4,10 @@ import { useState } from "react";
 import { INFINITE_ANIMATIONS } from "../../src/lib/infinite-animations.ts";
 import { cn } from "../../src/lib/utils.ts";
 import {
+  DURATION,
+  EASE_DRAWER,
+  EASE_IN_OUT_STRONG,
+  EASE_OUT_STRONG,
   EASE_PANEL,
   SPRING_DOCK,
   SPRING_INDICATOR,
@@ -26,6 +30,81 @@ const EASINGS = [
   ["ease-in-out-strong", "--ease-in-out-strong", "two-way state changes"],
   ["ease-drawer", "--ease-drawer", "panels and drawers sliding in"],
 ] as const;
+
+const JS_TOKENS = [
+  ["EASE_OUT_STRONG", `[${EASE_OUT_STRONG.join(", ")}]`, "ease-out-strong"],
+  ["EASE_IN_OUT_STRONG", `[${EASE_IN_OUT_STRONG.join(", ")}]`, "ease-in-out-strong"],
+  ["EASE_DRAWER", `[${EASE_DRAWER.join(", ")}]`, "ease-drawer"],
+  ...Object.entries(DURATION).map(([k, v]) => [`DURATION.${k}`, `${v}s`, `duration-${k}`] as const),
+] as const;
+
+/** The motion utilities, each with a live sample. */
+const UTILITIES = [
+  [
+    "pressable",
+    "no dip",
+    "a press dip and colour fade for anything clickable that is not a Button",
+  ],
+  [
+    "animate-card-rise",
+    "fades",
+    "a card rising into place; set --i to its index for a 30ms stagger",
+  ],
+  ["thinking-shimmer", "still text", "a live status label: a highlight sweeps across the text"],
+  ["stream-caret", "steady", "the caret at the end of streaming text"],
+  ["animate-pulse-ring", "hidden", "a ring spreading from a live dot"],
+  [
+    "animate-jump-flash",
+    "unchanged",
+    "the row a jump landed on: a tint that fades out (background-color, on purpose)",
+  ],
+] as const;
+
+function UtilitySample({ utility, run }: { utility: string; run: number }) {
+  switch (utility) {
+    case "pressable":
+      return (
+        <button type="button" className="pressable label rounded-md bg-muted px-3 py-1.5">
+          Press me
+        </button>
+      );
+    case "animate-card-rise":
+      return (
+        <div key={run} className="flex gap-1">
+          {[0, 1, 2].map((i) => (
+            <span
+              key={i}
+              className="animate-card-rise surface-card size-6"
+              // ratchet-allow: --i is the stagger index the card-rise utility reads, not a style value.
+              style={{ "--i": i } as React.CSSProperties}
+            />
+          ))}
+        </div>
+      );
+    case "thinking-shimmer":
+      return <span className="thinking-shimmer label">Thinking…</span>;
+    case "stream-caret":
+      return (
+        <span className="body text-foreground">
+          Streaming text
+          <span className="stream-caret" aria-hidden="true" />
+        </span>
+      );
+    case "animate-pulse-ring":
+      return (
+        <span className="relative flex size-2">
+          <span className="absolute inset-0 animate-pulse-ring rounded-full bg-success" />
+          <span className="relative size-2 rounded-full bg-success" />
+        </span>
+      );
+    default:
+      return (
+        <span key={run} className="label animate-jump-flash rounded px-2 py-1 text-foreground">
+          Jumped here
+        </span>
+      );
+  }
+}
 
 const SPRINGS = [
   ["SPRING_RAIL", SPRING_RAIL, "a rail changing width"],
@@ -64,6 +143,7 @@ function SpringTrack({ on, spring }: { on: boolean; spring: object }) {
 function MotionPage() {
   const [on, setOn] = useState(false);
   const [mode, setMode] = useState("dark");
+  const [run, setRun] = useState(0);
   const play = (
     <Button variant="outline" onClick={() => setOn((v) => !v)}>
       Play
@@ -139,6 +219,46 @@ function MotionPage() {
         </p>
       </Section>
       <Section
+        title="The tokens in JS"
+        intro={
+          <>
+            The same curves and durations for <code className="code">motion</code>, from{" "}
+            <code className="code">src/lib/motion.ts</code>, so JS never types a fifth number. Wrap
+            an app in <code className="code">{'<MotionConfig reducedMotion="user">'}</code>: every
+            motion component then drops its transforms under prefers-reduced-motion. A bare{" "}
+            <code className="code">animate()</code> on a motion value ignores MotionConfig, so check{" "}
+            <code className="code">useReducedMotion()</code> there.
+          </>
+        }
+      >
+        <TokenTable
+          columns={["Constant", "Value", "The CSS token"]}
+          rows={JS_TOKENS.map(([name, value, css]) => ({ name, value, use: css }))}
+        />
+      </Section>
+      <Section
+        title="Utilities"
+        intro={
+          <>
+            Motion with a name, so no app writes it twice. Each one respects reduced motion: an
+            entrance only fades, an endless one stops.{" "}
+            <Button variant="outline" onClick={() => setRun((r) => r + 1)}>
+              Replay
+            </Button>
+          </>
+        }
+      >
+        <TokenTable
+          columns={["Utility", "Reduced motion", "Use", "Demo"]}
+          rows={UTILITIES.map(([name, reduced, use]) => ({
+            name,
+            value: reduced,
+            use,
+            sample: <UtilitySample utility={name} run={run} />,
+          }))}
+        />
+      </Section>
+      <Section
         title="Endless animations"
         intro={
           <>
@@ -155,7 +275,7 @@ function MotionPage() {
           rows={INFINITE_ANIMATIONS.map((a) => ({
             name: a.id,
             value: a.driver === "css" ? a.selector : "--infinite-animation-fps",
-            use: a.components.join(", "),
+            use: a.components.length > 0 ? a.components.join(", ") : "utility",
             sample:
               a.driver === "css" ? (
                 <code className="code">
