@@ -421,6 +421,17 @@ foundations page).
 - The package sets no root font size; desktop and web both use 13px, so `rem`
   spacing matches between them.
 
+### Upgrading to 0.1.16
+
+Accessibility fixes. Secondary and disabled text get brighter in the Atlas-authored themes.
+
+- **Text contrast.** `muted-foreground` and `text.disabled` now reach at least 4.5:1 on every surface in `atlas`, `atlas-mono`, `chyral` and `phosphor`, both dark and light. Atlas dark moves from `#585858` to `#939393` (muted) and from `#3f3f3f` to `#858585` (disabled). The ported third-party themes are unchanged.
+- **`test:storybook` now fails on `color-contrast`.** A story that is low-contrast on purpose opts out with `contrastExempt(reason)` (`stories/lib/a11y.ts`).
+- **`AccordionTrigger`** draws the standard focus ring, inset.
+- **`AuthSplit`**'s form column is a `<main>` landmark.
+- **`DataTable`** rows with an `onRowClick` are focusable and open on Enter or Space. **`TerminalBlock`** link segments are `role="link"` and open on Enter.
+- Secondary text in `SessionPipeline`, `TurnRow`, `CommsMessageRow` and `CodeBlock` is dimmed with text tokens, not opacity.
+
 ### Upgrading to 0.1.15
 
 Additive, plus two fixes.
