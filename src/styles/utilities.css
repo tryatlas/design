@@ -714,6 +714,16 @@
    tint. The
    edge is a border-box gradient behind a padding-box fill, so it follows any
    radius. Both come off `--foreground`, so the rim reads on every theme. */
+/* A scroller with no scrollbar: the session sidebar's list, which scrolls
+   under the pointer and the arrow keys and would otherwise draw a bar beside
+   its rows. */
+@utility scrollbar-hidden {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
 @utility glass-rim {
   --glass-fill: var(--background);
   border: 1px solid transparent;

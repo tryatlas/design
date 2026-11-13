@@ -2,7 +2,7 @@
  * Story parameters that turn axe's `color-contrast` rule off for ONE story.
  * `.storybook/preview.tsx` runs it on every story under
  * `bun run test:storybook`, and this is the only way out of it. The argument
- * is the reason, and there are three:
+ * is the reason, and there are four:
  *
  *   disabled      The low-contrast text is a disabled state. WCAG 1.4.3
  *                 exempts inactive UI components.
@@ -18,7 +18,14 @@
  *                 open failures there: the 12% hue fills behind `Tag` and
  *                 `Pill` in light themes, Atlas's own included. The run
  *                 checks the default theme everywhere else.
+ *   decorative    The failing text is an `aria-hidden` mark standing in for
+ *                 an image: a project's monogram where its icon would be,
+ *                 dimmed with the row that receded. WCAG 1.4.3 exempts
+ *                 text that is pure decoration or part of a logo; the row's
+ *                 accessible name carries the project.
  */
-export function contrastExempt(_reason: "disabled" | "code-content" | "every-theme") {
+export function contrastExempt(
+  _reason: "disabled" | "code-content" | "every-theme" | "decorative",
+) {
   return { a11y: { config: { rules: [{ id: "color-contrast", enabled: false }] } } };
 }

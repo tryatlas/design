@@ -98,6 +98,16 @@ export const INFINITE_ANIMATIONS: readonly InfiniteAnimation[] = [
     steps: 36,
   },
   {
+    // The session sidebar's working ring: a 3 s turn, like the pipeline's.
+    id: "session-working-ring",
+    components: ["WorkingRing", "SessionTopStatusIcon", "SessionRowCard"],
+    source: "src/components/session-sidebar/session-row-parts.tsx",
+    driver: "css",
+    selector: '.animate-spin[data-slot="session-working-ring"]',
+    duration: 3,
+    steps: 36,
+  },
+  {
     // `motion-safe:animate-ping`, which a `.animate-ping` rule does not match.
     id: "globe-ping",
     components: ["Globe"],

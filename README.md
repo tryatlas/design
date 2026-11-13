@@ -107,6 +107,27 @@ that emits highlight.js classes), and `syntax.css`, part of `styles.css`,
 colours them from the theme's `syntax.*` keys. `StreamingMarkdown` never
 re-parses a finished block, so stream into it as fast as text arrives.
 
+### Session sidebar
+
+Desktop's left sidebar, props only, so web can draw the same one over its own
+data. It is separate from the older `Sidebar`/`AppShell`, which web still uses.
+`SessionSidebar` is the frame, with slots for the `header` row, the `picker`,
+the `destinations` (`SessionSidebarDestinations` of
+`SessionSidebarDestination`s) and the `footer` (`SessionSidebarDock`); the
+sessions are its children. The list parts are `SessionSidebarSearch`,
+`SessionSidebarScroller`, the shelves and states (`SessionSidebarSnoozedShelf`,
+`SessionSidebarSettledShelf`, `SessionSidebarSearchResults`,
+`SessionSidebarEmpty`, `SessionSidebarError`), and the rows are
+`SessionRowCard`, `SessionRowSlim` and `SessionSearchResult`, with
+`SessionRowHoverCard` as a row's `hoverCard`. Closed, `SessionSidebarPeek`
+lays the sidebar over the content from the left edge.
+
+The app keeps everything that is not drawing: the list's order, its virtual
+window and drag, the keys, the context menu, the stores, and the status a row
+wears (`SessionRowStatus`, `SessionTopStatus`). The project badge, the agent's
+mark, the pull request badge, the turn clock and the hover card's lines go in
+as nodes. The stories under Shell/SessionSidebar show it filled.
+
 ### Server components
 
 Every module that uses hooks, context or a Base UI part starts with

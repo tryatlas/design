@@ -12,6 +12,7 @@ import { StreamingMarkdown } from "../components/session/streaming-markdown.tsx"
 import { ThemeProvider } from "./theme.tsx";
 import { Skeleton } from "../components/ui/skeleton.tsx";
 import { Spinner } from "../components/ui/spinner.tsx";
+import { WorkingRing } from "../components/session-sidebar/session-row-parts.tsx";
 import { IconButton } from "../ui/icon-button.tsx";
 import { RefreshCw } from "lucide-react";
 import {
@@ -100,6 +101,7 @@ describe("INFINITE_ANIMATIONS", () => {
         <Spinner />
         <IconButton icon={RefreshCw} label="Refresh" loading />
         <Skeleton />
+        <WorkingRing />
         <SessionPipeline session={planSession()} />
         <StreamingMarkdown source="hi" streaming />
         <ThemeProvider>
