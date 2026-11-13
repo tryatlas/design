@@ -466,6 +466,16 @@ foundations page).
   carries the rows' `atlas-*` classes, their animations and
   `--transcript-column`.
 
+### Upgrading to 0.1.19
+
+The session transcript, as one composition desktop and the web both render. **Breaking:** `SessionTimeline`, `TurnRow` and `ToolCallCard` are gone from `./session`; render the transcript rows instead. `SessionView`, its helpers and `SessionPipeline` stay.
+
+- **Rows:** prompt, response, thought, tool line, folded block, work header, subagent, turn footer, pause, injected prompt and interruption, over a row model of their own (`Row`, `RowKind`).
+- **Frame:** `TranscriptView`, the working indicator, the loading state and the jump-to-bottom pill.
+- **Helpers:** the labels a projection needs (`toolDisplayName`, `summarizeMarkers`, `parseShellCommand`, `thoughtHeadline`, …) and the turn rules (`markerBlock`, `markLiveBlocks`, `foldWork`, `gapSeparator`).
+- **`TranscriptProvider`:** the app supplies markdown, message actions, comment pills, the changed-files card and what a tool line opens.
+- **CSS:** `transcript.css`, imported by both stylesheets. Set `--transcript-column` to your column width.
+
 ### Upgrading to 0.1.18
 
 Motion, surfaces and variants from the web design audit. **One breaking change:** `Panel`'s `delay` prop is now `index` (stagger position).
