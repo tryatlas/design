@@ -17,6 +17,7 @@
      utilities.css  the @theme bridge to Tailwind and the named @utility set
      syntax.css     highlight.js classes coloured from the `syntax.*` keys
      session.css    the session blocks' prose (`.prose-session`)
+     transcript.css the session transcript's rows (tool lines, shimmers, entrances)
      canvas.css     xyflow's `--xy-*` chrome mapped onto the theme (canvas blocks)
    ========================================================================== */
 
@@ -28,6 +29,7 @@
 @import "./utilities.css";
 @import "./syntax.css";
 @import "./session.css";
+@import "./transcript.css";
 @import "./canvas.css";
 
 /* The package's compiled components, so the consumer's Tailwind generates the

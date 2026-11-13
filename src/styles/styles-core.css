@@ -25,6 +25,7 @@
 @import "./utilities.css";
 @import "./syntax.css";
 @import "./session.css";
+@import "./transcript.css";
 @import "./canvas.css";
 
 /* As in styles.css: the package's compiled components, so the consumer's

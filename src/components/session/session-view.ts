@@ -1,11 +1,12 @@
 /**
- * SessionView: the one presentational shape every session block renders.
+ * SessionView: a session's summary shape, which `SessionPipeline` and the
+ * session helpers render. The transcript itself renders the row model in
+ * `./transcript/model.ts`, not this.
  *
- * Desktop renders a session from the session-delta wire and web from the
- * server's `TimelineEntry` pages. Neither shape reaches the blocks: each app
- * writes an adapter onto this one, so "web matches desktop" holds by
- * construction rather than by two transcripts happening to agree. Nothing here
- * imports either side's contract types; this file is the contract.
+ * Desktop and web each write an adapter onto this shape from their own
+ * sources (the session-delta wire, the server's `TimelineEntry` pages).
+ * Nothing here imports either side's contract types; this file is the
+ * contract.
  *
  * A field only one source can supply is optional, and no id exists on only one
  * side: item ids are the message or entry ids both already have, which is what
