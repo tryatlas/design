@@ -1,0 +1,214 @@
+/* ==========================================================================
+   @tryatlas/design — the session transcript's rows (`@tryatlas/design/session`).
+
+   Plain CSS for what the row views cannot say with utilities: the fixed-height
+   tool line, the live shimmers, the entrances, the hover footer one row
+   reveals in the next, and the switches that park loops nobody can see.
+
+   Every animation here is opacity or paint only — no transform on a looping
+   row, no layout — so nothing in it touches an app's scroll loop.
+
+   Unlayered, like `session.css`, so an app's own rules meet these on
+   specificity.
+   ========================================================================== */
+
+/* The conversation column (`TRANSCRIPT_COLUMN`). An app that lets the reader
+   widen it sets this on <html>. */
+:root {
+  --transcript-column: 760px;
+}
+
+/* The transcript's scroller: scrolls, shows no scrollbar. */
+.transcript-scroller {
+  scrollbar-width: none;
+}
+.transcript-scroller::-webkit-scrollbar {
+  display: none;
+}
+
+/* Row containment scopes reflow and style recalc to the row. `layout style`
+   only — deliberately NOT `paint` (it would clip the hover action bar that
+   sits at a row's top edge), and deliberately NOT `content-visibility: auto`,
+   which blanks the viewport when a fling outruns skipped-row
+   materialization. No `will-change` either: promoting hundreds of rows to
+   layers makes WebKit worse, not better. */
+.atlas-row {
+  contain: layout style;
+}
+
+/* A turn's last response and its changed-files card are separate rows, but
+   one response: its hover footer sits after the card, in the turn footer row
+   (`TurnFooterRowView`), and hovering the response's text reveals it as
+   hovering the card does. An attribute on the row wrapper and a sibling
+   combinator, not `:has()`, so a hover invalidates only the next row. */
+.atlas-row[data-footer-below]:hover + .atlas-row [data-response-footer] {
+  pointer-events: auto;
+  opacity: 1;
+}
+
+/* Marker rows: one line, muted, never wraps. */
+.atlas-marker {
+  height: 26px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+/* Running-state shimmer for in-flight markers. Opacity only — no transform,
+   no layout. */
+@keyframes atlas-marker-shimmer {
+  0%,
+  100% {
+    opacity: 0.45;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+.atlas-marker-running {
+  animation: atlas-marker-shimmer 1.4s ease-in-out infinite;
+}
+
+/* Live status label ("Thinking…"): a highlight that travels across the
+   glyphs. Clipped to the text, so it animates paint only. Deliberately not a
+   spinner: the marker rows below it already carry per-tool running glyphs, and
+   a second spinning thing next to them reads as two separate jobs. */
+@keyframes atlas-thinking-sweep {
+  0% {
+    background-position: 140% 0;
+  }
+  100% {
+    background-position: -40% 0;
+  }
+}
+.atlas-thinking-shimmer {
+  background-image: linear-gradient(
+    90deg,
+    var(--muted-foreground) 0%,
+    var(--muted-foreground) 30%,
+    var(--foreground) 50%,
+    var(--muted-foreground) 70%,
+    var(--muted-foreground) 100%
+  );
+  background-size: 250% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  /* Stepped: a moving background is a repaint per frame, and at 120Hz that
+     kept the display link busy for minutes on end. Thirty steps across the
+     sweep still reads as motion. */
+  animation: atlas-thinking-sweep 2.2s steps(30) infinite;
+}
+
+/* Pixel-grid loader cell (`LoadingState`). Opacity only — nine 2.5px cells,
+   no transform and no layout. Duration and delay come from the pattern,
+   inline. */
+@keyframes atlas-pixel-on {
+  0%,
+  100% {
+    opacity: 0.15;
+  }
+  40% {
+    opacity: 1;
+  }
+}
+.atlas-pixel-cell {
+  animation-name: atlas-pixel-on;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+
+/* Nobody is looking: the window is hidden (`initAnimationVisibility`), the
+   session sits in a background tab the app marks `data-atlas-offstage` (still
+   laid out, where animations keep running), or the row is scrolled away
+   (`useVisibleAnimation`). `animate-pulse` is the `Skeleton`'s loop, so
+   loading placeholders park too. */
+:root[data-atlas-hidden]
+  :is(.atlas-thinking-shimmer, .atlas-marker-running, .atlas-pixel-cell, .animate-pulse),
+[data-atlas-offstage]
+  :is(.atlas-thinking-shimmer, .atlas-marker-running, .atlas-pixel-cell, .animate-pulse),
+[data-offscreen]
+  :is(.atlas-thinking-shimmer, .atlas-marker-running, .atlas-pixel-cell, .animate-pulse),
+:is(
+  .atlas-thinking-shimmer,
+  .atlas-marker-running,
+  .atlas-pixel-cell,
+  .animate-pulse
+)[data-offscreen] {
+  animation-play-state: paused;
+}
+
+/* A just-sent prompt's entrance. One-shot and it ends at identity (no
+   fill-mode): nothing lingers behind it. Only the message sent just now plays
+   it, never a row that mounts while scrolling up through history. */
+@keyframes atlas-bubble-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.atlas-bubble-in {
+  animation: atlas-bubble-in 0.18s ease-out;
+}
+
+/* A floating pill's entrance (the jump-to-bottom pill): slides up and fades
+   in. */
+@keyframes atlas-pill-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.atlas-pill-in {
+  animation: atlas-pill-in 200ms ease-out both;
+}
+
+/* A thinking row's live thought: at most four lines, the newest ones, with
+   the older text fading out at the top edge — only once there is older text
+   cut off there (`data-clipped`). */
+.atlas-live-thought {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  max-height: calc(4 * 19px + 4px);
+  overflow: hidden;
+}
+.atlas-live-thought[data-clipped] {
+  mask-image: linear-gradient(to bottom, transparent, black 20px);
+}
+
+@keyframes atlas-transcript-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .atlas-thinking-shimmer {
+    animation: none;
+    background-image: none;
+    -webkit-text-fill-color: var(--secondary-foreground);
+  }
+  /* The loop stops at full strength: its trough (0.45) is not readable text. */
+  .atlas-marker-running {
+    animation: none;
+  }
+  .atlas-pixel-cell {
+    animation: none;
+  }
+  /* Entrances keep their timing and lose their movement. */
+  .atlas-bubble-in,
+  .atlas-pill-in {
+    animation-name: atlas-transcript-fade-in;
+  }
+}

@@ -59,7 +59,7 @@ Without a provider, links are plain `<a href>` and nothing is "active".
   "./theme": "resolveTheme, resolveBase, themeFromToml, the registry, colour utils",
   "./ratchet": "runRatchet, defineRatchetSuite, formatViolations, RULES, strictRules, ATLAS_PREFIX_RULE, TRANSITION_ALL_RULE, SURFACE_CARD_RULE",
   "./animations": "INFINITE_ANIMATIONS, INFINITE_ANIMATION_FPS_VAR, infiniteAnimationFps (no React, no DOM at import)",
-  "./session": "the SessionView types and helpers, StreamingMarkdown, ToolCallCard, TurnRow, SessionTimeline, SessionPipeline",
+  "./session": "the transcript (row model, TranscriptProvider, TranscriptRowItem, TranscriptView, its parts), StreamingMarkdown, the SessionView types and helpers, SessionPipeline",
   "./timeline-calendar": "TimelineCalendar, which needs @tanstack/react-virtual",
   "./checkpoint-trace": "CheckpointTrace and its types, which needs @tanstack/react-virtual",
   "./keys.toml": "the derivation source",
@@ -82,30 +82,59 @@ which desktop and web already have), and the root entry imports none of them.
 
 ### Sessions
 
-Desktop and web each adapt their own session shape (the delta wire, the
-server's `TimelineEntry` pages) onto one presentational type, `SessionView`,
-and render it with the same blocks. The field-by-field mapping is the
-docblock of `src/components/session/session-view.ts`.
+The session transcript is one composition, the one desktop draws, and both
+apps render it. Each app adapts its own data (desktop's delta wire, the
+server's timeline pages and RC transcript) into the package's row model,
+`Row` (`src/components/session/transcript/model.ts`): a closed set of
+`RowKind`s, plain data compared shallowly, so a memoised row re-renders only
+when its own data changes. The label helpers that turn a tool call into a
+row's text (`toolDisplayName`, `toolIconFor`, `summarizeMarkers`,
+`liveMarkerLabel`, `parseShellCommand`, `thoughtHeadline`) are exported for
+those adapters.
+
+What only an app can do comes in through one `TranscriptProvider`: the
+markdown renderer, the actions under a message, comment pills, the
+changed-files card, and what a click on a tool line opens. Only `Markdown`,
+`onToggleExpand` and `onToggleGroup` are required; a slot left unset draws
+nothing.
 
 ```tsx
 import rehypeHighlight from "rehype-highlight";
-import { SessionTimeline, toolKindOf, type SessionView } from "@tryatlas/design/session";
+import {
+  StreamingMarkdown,
+  TranscriptProvider,
+  TranscriptRowItem,
+  TranscriptView,
+  type TranscriptMarkdownProps,
+} from "@tryatlas/design/session";
 
 const plugins = [rehypeHighlight]; // stable identity: blocks re-render on a new array
+function Markdown({ source, streaming }: TranscriptMarkdownProps) {
+  return <StreamingMarkdown source={source} streaming={streaming} rehypePlugins={plugins} />;
+}
 
-<SessionTimeline
-  session={toSessionView(source)} // the app's adapter
-  rehypePlugins={plugins}
-  commentSlot={(anchor) => <CommentButton anchor={anchor} />}
-  onLoadPayload={(callId, part) => loadPayload(callId, part)}
-  errorAction={<Button onClick={signIn}>Sign in</Button>}
-/>;
+<TranscriptProvider value={{ Markdown, onToggleExpand, onToggleGroup }}>
+  <TranscriptView
+    scrollRef={scrollRef}
+    contentRef={contentRef}
+    topInset={0}
+    empty={rows.length === 0}
+    rowViews={rows.map((row, i) => (
+      <TranscriptRowItem key={row.id} row={row} priority={i} agentLabel="Claude" />
+    ))}
+    turnInProgress={live}
+    working={live && waiting}
+    more={false}
+  />
+</TranscriptProvider>;
 ```
 
-The package highlights nothing itself: pass `rehype-highlight` (or anything
-that emits highlight.js classes), and `syntax.css`, part of `styles.css`,
-colours them from the theme's `syntax.*` keys. `StreamingMarkdown` never
-re-parses a finished block, so stream into it as fast as text arrives.
+The rows' styles are `transcript.css`, part of both stylesheets. The column
+is `--transcript-column` (760px unless the app sets it). The package
+highlights nothing itself: pass `rehype-highlight` (or anything that emits
+highlight.js classes), and `syntax.css`, part of `styles.css`, colours them
+from the theme's `syntax.*` keys. `StreamingMarkdown` never re-parses a
+finished block, so stream into it as fast as text arrives.
 
 ### Server components
 
@@ -423,6 +452,19 @@ foundations page).
   variable.
 - The package sets no root font size; desktop and web both use 13px, so `rem`
   spacing matches between them.
+
+### Unreleased
+
+- **The session transcript replaces the session blocks.** `SessionTimeline`,
+  `TurnRow` and `ToolCallCard` are gone from `./session`. In their place is
+  the transcript desktop draws: the `Row` model, `TranscriptProvider`,
+  `TranscriptRowItem`, `TranscriptView`, `LoadingState`,
+  `LoadingTranscriptState`, `JumpToBottomPill` and the label helpers
+  ([Sessions](#sessions) has the shape). `SessionView`, its helpers and
+  `SessionPipeline` stay.
+- **`transcript.css`** is new and is imported by both stylesheets. It
+  carries the rows' `atlas-*` classes, their animations and
+  `--transcript-column`.
 
 ### Upgrading to 0.1.18
 

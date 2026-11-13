@@ -22,26 +22,38 @@ assert.match(html, /data-slot="button"/, "Button renders on the server");
 // The session entry, with its optional markdown peers installed: the blocks
 // render on the server, and the root entry above never needed those peers.
 const session = await import("@tryatlas/design/session");
+const Markdown = ({ source, className }) =>
+  createElement("div", { className: className ?? "prose-session" }, source);
 assert.match(
   renderToString(
-    createElement(session.SessionTimeline, {
-      session: {
-        meta: { title: "Sort pinned sessions" },
-        phase: "done",
-        turns: [
-          {
-            key: "t1",
-            user: { id: "u1", text: "Sort them" },
-            items: [{ kind: "text", id: "a1", text: "## Done\n\n```ts\nconst x = 1\n```" }],
-          },
-        ],
-      },
-    }),
+    createElement(
+      session.TranscriptProvider,
+      { value: { Markdown, onToggleExpand() {}, onToggleGroup() {} } },
+      createElement(session.TranscriptRowItem, {
+        row: {
+          kind: session.RowKind.Prose,
+          id: "p:a1",
+          turnId: "t1",
+          firstInTurn: true,
+          text: "Done",
+          streaming: false,
+          showHeader: true,
+          model: "claude-sonnet",
+          timestamp: "2026-11-13T10:00:00Z",
+        },
+        priority: 0,
+        agentLabel: "Claude Code",
+      }),
+    ),
   ),
-  /data-slot="turn-row".*<h2>Done<\/h2>.*language-ts/s,
-  "SessionTimeline renders markdown on the server",
+  /data-row-id="p:a1".*claude-sonnet.*Done/s,
+  "a transcript row renders on the server",
 );
-assert.equal(session.toolKindOf("Bash"), "execute");
+assert.equal(
+  session.summarizeMarkers([]).summary,
+  "Used tools",
+  "the transcript's label helpers ship",
+);
 
 const require = createRequire(import.meta.url);
 
