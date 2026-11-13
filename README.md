@@ -453,28 +453,15 @@ foundations page).
 - The package sets no root font size; desktop and web both use 13px, so `rem`
   spacing matches between them.
 
-### Unreleased
-
-- **The session transcript replaces the session blocks.** `SessionTimeline`,
-  `TurnRow` and `ToolCallCard` are gone from `./session`. In their place is
-  the transcript desktop draws: the `Row` model, `TranscriptProvider`,
-  `TranscriptRowItem`, `TranscriptView`, `LoadingState`,
-  `LoadingTranscriptState`, `JumpToBottomPill` and the label helpers
-  ([Sessions](#sessions) has the shape). `SessionView`, its helpers and
-  `SessionPipeline` stay.
-- **`transcript.css`** is new and is imported by both stylesheets. It
-  carries the rows' `atlas-*` classes, their animations and
-  `--transcript-column`.
-
 ### Upgrading to 0.1.19
 
 The session transcript, as one composition desktop and the web both render. **Breaking:** `SessionTimeline`, `TurnRow` and `ToolCallCard` are gone from `./session`; render the transcript rows instead. `SessionView`, its helpers and `SessionPipeline` stay.
 
 - **Rows:** prompt, response, thought, tool line, folded block, work header, subagent, turn footer, pause, injected prompt and interruption, over a row model of their own (`Row`, `RowKind`).
-- **Frame:** `TranscriptView`, the working indicator, the loading state and the jump-to-bottom pill.
+- **Frame:** `TranscriptView`, `TranscriptRowItem`, the working indicator, `LoadingState` / `LoadingTranscriptState` and `JumpToBottomPill`. [Sessions](#sessions) has the shape.
 - **Helpers:** the labels a projection needs (`toolDisplayName`, `summarizeMarkers`, `parseShellCommand`, `thoughtHeadline`, …) and the turn rules (`markerBlock`, `markLiveBlocks`, `foldWork`, `gapSeparator`).
 - **`TranscriptProvider`:** the app supplies markdown, message actions, comment pills, the changed-files card and what a tool line opens.
-- **CSS:** `transcript.css`, imported by both stylesheets. Set `--transcript-column` to your column width.
+- **CSS:** `transcript.css`, imported by both stylesheets: the rows' `atlas-*` classes, their animations and `--transcript-column` (set it to your column width).
 
 ### Upgrading to 0.1.18
 
